@@ -1,0 +1,306 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block body %}
+<script type="text/javascript">
+    function PreviewImage() {
+        var oFReader = new FileReader();
+        oFReader.readAsDataURL(document.getElementById("uploadImage").files[0]);
+    
+        oFReader.onload = function (oFREvent) {
+            document.getElementById("uploadPreview").src = oFREvent.target.result;
+            document.getElementById("imagePreviewContainer").style.display = "block";
+        };
+    }
+</script>
+
+<style>
+    .post-container {
+        background: rgba(255, 255, 255, 0.03);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 15px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+        padding: 30px;
+        margin: 2% 5%;
+    }
+    
+    .form-title {
+        color: #fff;
+        text-align: center;
+        font-size: 28px;
+        font-weight: 700;
+        margin-bottom: 30px;
+        position: relative;
+        padding-bottom: 15px;
+    }
+    
+    .form-title::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80px;
+        height: 3px;
+        background: linear-gradient(135deg, #03A589, #016A60);
+        border-radius: 3px;
+    }
+    
+    .form-group {
+        margin-bottom: 20px;
+    }
+    
+    .form-label {
+        color: #fff;
+        font-weight: 600;
+        margin-bottom: 8px;
+        display: block;
+    }
+    
+    .form-control {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        color: #fff;
+        padding: 12px 15px;
+        transition: all 0.3s ease;
+        width: 100%;
+    }
+    
+    .form-control:focus {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: rgba(3, 165, 137, 0.5);
+        box-shadow: 0 0 0 0.2rem rgba(3, 165, 137, 0.25);
+    }
+    
+    textarea.form-control {
+        min-height: 120px;
+    }
+    
+    .btn-primary {
+        background: linear-gradient(135deg, #038069, #016A60);
+        border: none;
+        padding: 12px 25px;
+        border-radius: 8px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(3, 140, 120, 0.3);
+        margin-top: 20px;
+    }
+    
+    .btn-primary:hover {
+        background: linear-gradient(135deg, #038069, #01213D);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(3, 140, 120, 0.4);
+    }
+    
+    .btn-secondary {
+        background: linear-gradient(135deg, #4a934a, #2c762c);
+        border: none;
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(42, 140, 42, 0.3);
+        float: right;
+        margin-bottom: 15px;
+    }
+    
+    .btn-secondary:hover {
+        background: linear-gradient(135deg, #2c762c, #225c22);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(42, 140, 42, 0.4);
+    }
+    
+    .form-row {
+        display: flex;
+        flex-wrap: wrap;
+        margin-right: -10px;
+        margin-left: -10px;
+    }
+    
+    .form-col {
+        padding-right: 10px;
+        padding-left: 10px;
+        flex: 0 0 50%;
+        max-width: 50%;
+    }
+    
+    .image-preview {
+        margin-top: 15px;
+        display: none;
+        text-align: center;
+    }
+    
+    .preview-img {
+        width: 150px;
+        height: 150px;
+        object-fit: cover;
+        border-radius: 8px;
+        border: 3px solid rgba(3, 165, 137, 0.3);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .form-file {
+        position: relative;
+        margin-top: 15px;
+    }
+    
+    .form-file-label {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px dashed rgba(3, 165, 137, 0.5);
+        border-radius: 8px;
+        color: #fff;
+        padding: 30px 15px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: block;
+    }
+    
+    .form-file-label:hover {
+        background: rgba(3, 165, 137, 0.1);
+    }
+    
+    .form-file-label i {
+        font-size: 24px;
+        color: #03A589;
+        margin-bottom: 10px;
+        display: block;
+    }
+    
+    .form-file-input {
+        position: absolute;
+        left: 0;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        opacity: 0;
+        cursor: pointer;
+        width: 100%;
+        height: 100%;
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .form-col {
+            flex: 0 0 100%;
+            max-width: 100%;
+        }
+        
+        .post-container {
+            margin: 2% 2%;
+            padding: 20px;
+        }
+    }
+</style>
+
+<div class="post-container">
+    <h2 class="form-title">Post Ad for Apartment</h2>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-success alert-dismissible" role="alert">
+                <strong>{{ message }}</strong>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    
+    <div style="clear: both;"></div>
+
+    <form action="/post/" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <!-- Location Information -->
+        <div class="form-row">
+            <div class="form-col">
+                <div class="form-group">
+                    <label for="location" class="form-label">Location</label>
+                    <input type="text" class="form-control" placeholder="Give your location" name="location" required>
+                </div>
+            </div>
+            <div class="form-col">
+                <div class="form-group">
+                    <label for="city" class="form-label">City</label>
+                    <input type="text" class="form-control" placeholder="Ex - Dinajpur" name="city" required>
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-row">
+            <div class="form-col">
+                <div class="form-group">
+                    <label for="dimention" class="form-label">Dimension</label>
+                    <input type="text" class="form-control" placeholder="ex - 10 x 12 ft" name="dimention" required>
+                </div>
+            </div>
+            <div class="form-col">
+                <div class="form-group">
+                    <label for="cost" class="form-label">Cost (د.ك)</label>
+                    <input type="number" class="form-control" placeholder="Cost in Dinar" name="cost" required>
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-row">
+            <div class="form-col">
+                <div class="form-group">
+                    <label for="bedroom" class="form-label">Bedrooms</label>
+                    <input type="number" class="form-control" placeholder="Enter number of bedrooms" name="bedroom" required>
+                </div>
+            </div>
+            <div class="form-col">
+                <div class="form-group">
+                    <label for="kitchen" class="form-label">Kitchen</label>
+                    <select class="form-control" name="kitchen" required>
+                        <option value="">Select</option>
+                        <option value="Yes">Yes</option>
+                        <option value="No">No</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label for="balcany" class="form-label">Balcony</label>
+            <select class="form-control" name="balcany" required>
+                <option value="">Select</option>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="desc" class="form-label">Description</label>
+            <textarea class="form-control" name="desc" placeholder="Describe your apartment with key details and highlights..."></textarea>
+        </div>
+        
+        <!-- Image Upload -->
+        <div class="form-group">
+            <label class="form-label">Upload Picture</label>
+            <div class="form-file">
+                <label class="form-file-label">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    Click or drop to upload apartment image
+                    <input id="uploadImage" class="form-file-input" type="file" name="img" onchange="PreviewImage();" accept="image/*" />
+                </label>
+            </div>
+            <div id="imagePreviewContainer" class="image-preview">
+                <img name="img" id="uploadPreview" class="preview-img" />
+            </div>
+        </div>
+        
+        <!-- Submit Button -->
+        <button class="btn btn-primary btn-block" type="submit">
+            <i class="fas fa-paper-plane"></i> Post Advertisement
+        </button>
+    </form>
+</div>
+{% endblock %}
