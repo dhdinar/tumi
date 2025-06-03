@@ -1,12 +1,14 @@
-from django.http import HttpResponse
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth import authenticate, login
-from django.shortcuts import render, redirect
+from django.http import HttpResponse, Http404
+from django.shortcuts import render, redirect, get_object_or_404
 from django.template import loader
 from django.contrib import messages
+from django.contrib.auth import authenticate, login
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password
+from django.contrib.auth.views import LogoutView
 from user.models import Room, House, Contact, User
 import re
+
 
 def index(request):
     template = loader.get_template('index.html')
@@ -53,17 +55,13 @@ def search(request):
 
 
 def about(request):
-    template = loader.get_template('about.html')
-    context = {
+    return render(request, 'about.html', {
         'room': Room.objects.all(),
         'house': House.objects.all(),
-    }
-    return HttpResponse(template.render(context, request))
+    })
 
 
 def contact(request):
-    template = loader.get_template('contact.html')
-    context = {}
     if request.method == 'POST':
         subject = request.POST['subject']
         email = request.POST['email']
@@ -71,69 +69,79 @@ def contact(request):
         if not re.match(r'^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$', email):
             return render(request, 'contact.html', {'msg': 'Invalid email'})
         Contact.objects.create(subject=subject, email=email, body=body)
-        context['msg'] = 'Message sent to admin.'
-    else:
-        context['msg'] = ''
-    return HttpResponse(template.render(context, request))
+        return render(request, 'contact.html', {'msg': 'Message sent to admin.'})
+    return render(request, 'contact.html', {'msg': ''})
 
 
 def descr(request):
-    template = loader.get_template('desc.html')
-    context = {}
     if request.method == 'GET':
         prop_id = request.GET.get('id')
+
+        if not prop_id:
+            raise Http404("Property ID is required")
+
         try:
-            room = Room.objects.get(room_id=prop_id)
-            context.update({'val': room, 'type': 'Apartment', 'user': room.user})
-        except Room.DoesNotExist:
-            house = House.objects.get(house_id=prop_id)
-            context.update({'val': house, 'type': 'House', 'user': house.user})
-    return HttpResponse(template.render(context, request))
+            prop_id = int(prop_id)
+        except (ValueError, TypeError):
+            raise Http404("Invalid property ID")
+
+        try:
+            room = get_object_or_404(Room, room_id=prop_id)
+            context = {'val': room, 'type': 'Apartment', 'user': room.user_email}
+        except Http404:
+            house = get_object_or_404(House, house_id=prop_id)
+            context = {'val': house, 'type': 'House', 'user': house.user_email}
+
+        return render(request, 'desc.html', context)
 
 
-# def register(request):
-#     if request.method == 'GET':
-#         return render(request, 'register.html', {'msg': ''})
+def register(request):
+    if request.method == 'GET':
+        return render(request, 'register.html', {'msg': ''})
 
-#     name = request.POST['name']
-#     email = request.POST['email']
-#     location = request.POST['location']
-#     city = request.POST['city']
-#     state = request.POST['state']
-#     phone = request.POST['phone']
-#     pas = request.POST['pass']
-#     cpas = request.POST['cpass']
+    name = request.POST['name']
+    email = request.POST['email']
+    pas = request.POST['pass']
 
-#     if not re.match(r'^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$', email):
-#         return render(request, 'register.html', {'msg': 'Invalid email'})
+    if not re.match(r'^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$', email):
+        return render(request, 'register.html', {'msg': 'Invalid email'})
 
-#     if len(phone) != 10 or not phone.isdigit():
-#         return render(request, 'register.html', {'msg': 'Invalid phone number'})
+    if User.objects.filter(email=email).exists():
+        return render(request, 'register.html', {'msg': 'Email already registered'})
 
-#     if pas != cpas:
-#         return render(request, 'register.html', {'msg': 'Password did not match'})
+    user = User.objects.create(
+        name=name,
+        email=email,
+        password=make_password(pas)  # hash password
+    )
 
-#     if User.objects.filter(email=email).exists():
-#         return render(request, 'register.html', {'msg': 'Email already registered'})
+    # Authenticate and log in
+    user = authenticate(request, email=email, password=pas)
+    if user:
+        login(request, user)
+        return redirect("/profile/")
+    return render(request, 'register.html', {'msg': 'Registration failed. Try again.'})
 
-#     user = User.objects.create(
-#         name=name,
-#         email=email,
-#         location=location,
-#         city=city,
-#         state=state,
-#         number=phone,
-#         password=pas
-#     )
-#     login(request, user)
-#     return redirect("/profile/")
+
+def login_view(request):
+    if request.method == 'GET':
+        return render(request, 'login.html')
+
+    email = request.POST['email']
+    password = request.POST['password']
+
+    user = authenticate(request, email=email, password=password)
+    if user:
+        login(request, user)
+        return redirect("/")
+    return render(request, 'login.html', {'msg': 'Email and password did not match.'})
 
 
 @login_required(login_url='/login')
 def profile(request):
     report = Contact.objects.filter(email=request.user.email)
-    room = Room.objects.filter(user_email=request.user.email)  # Updated field
-    house = House.objects.filter(user_email=request.user.email)  # Updated field
+    room = Room.objects.filter(user_email=request.user.email)
+    house = House.objects.filter(user_email=request.user.email)
 
     context = {
         'user': request.user,
@@ -151,19 +159,18 @@ def profile(request):
 def post(request):
     if request.method == "GET":
         return render(request, 'post.html', {'user': request.user})
+
     try:
-        room = Room.objects.create(
-            user_email=request.user.email,  # Updated field
+        Room.objects.create(
+            user_email=request.user,
             dimention=request.POST['dimention'],
             location=request.POST['location'].lower(),
             city=request.POST['city'].lower(),
-            state=request.POST['state'].lower(),
+            floor=request.POST['floor'],
             cost=int(request.POST['cost']),
-            hall=request.POST['hall'].lower(),
             kitchen=request.POST['kitchen'].lower(),
             balcany=request.POST['balcany'].lower(),
             bedrooms=int(request.POST['bedroom']),
-            AC=request.POST['AC'].lower(),
             desc=request.POST['desc'].upper(),
             img=request.FILES['img']
         )
@@ -171,6 +178,7 @@ def post(request):
     except Exception as e:
         print(e)
         return HttpResponse(status=500)
+
     return render(request, 'post.html')
 
 
@@ -178,20 +186,18 @@ def post(request):
 def posth(request):
     if request.method == "GET":
         return render(request, 'posth.html', {'user': request.user})
+
     try:
-        house = House.objects.create(
-            user_email=request.user.email,  # Updated field
+        House.objects.create(
+            user_email=request.user,
             area=request.POST['area'],
             floor=request.POST['floor'],
             location=request.POST['location'].lower(),
             city=request.POST['city'].lower(),
-            state=request.POST['state'].lower(),
             cost=int(request.POST['cost']),
-            hall=request.POST['hall'].lower(),
             kitchen=request.POST['kitchen'].lower(),
             balcany=request.POST['balcany'].lower(),
             bedrooms=int(request.POST['bedroom']),
-            AC=request.POST['AC'].lower(),
             desc=request.POST['desc'].upper(),
             img=request.FILES['img']
         )
@@ -199,6 +205,7 @@ def posth(request):
     except Exception as e:
         print(e)
         return HttpResponse(status=500)
+
     return render(request, 'posth.html')
 
 
@@ -206,7 +213,7 @@ def posth(request):
 def deleter(request):
     if request.method == 'GET':
         id = request.GET.get('id')
-        Room.objects.filter(room_id=id, user_email=request.user.email).delete()  # Updated field
+        Room.objects.filter(room_id=id, user_email=request.user.email).delete()
         messages.success(request, 'Apartment deleted successfully.')
     return redirect('/profile')
 
@@ -215,78 +222,6 @@ def deleter(request):
 def deleteh(request):
     if request.method == 'GET':
         id = request.GET.get('id')
-        House.objects.filter(house_id=id, user_email=request.user.email).delete()  # Updated field
+        House.objects.filter(house_id=id, user_email=request.user.email).delete()
         messages.success(request, 'House deleted successfully.')
     return redirect('/profile')
-
-
-# def login_view(request):
-#     if request.method == 'GET':
-#         return render(request, 'login.html')
-#     email = request.POST['email']
-#     password = request.POST['password']
-#     user = authenticate(request, email=email, password=password)
-#     if user:
-#         login(request, user)
-#         return redirect("/")
-#     else:
-#         return render(request, 'login.html', {'msg': 'Email and password did not match.'})
-
-
-def register(request):
-    if request.method == 'GET':
-        return render(request, 'register.html', {'msg': ''})
-
-    name = request.POST['name']
-    email = request.POST['email']
-    #location = request.POST['location']
-    #city = request.POST['city']
-    #state = request.POST['state']
-    #phone = request.POST['phone']
-    pas = request.POST['pass']
-    #cpas = request.POST['cpass']
-
-    if not re.match(r'^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$', email):
-        return render(request, 'register.html', {'msg': 'Invalid email'})
-
-    #if len(phone) != 10 or not phone.isdigit():
-    #    return render(request, 'register.html', {'msg': 'Invalid phone number'})
-
-    #if pas != cpas:
-    #    return render(request, 'register.html', {'msg': 'Password did not match'})
-
-    if User.objects.filter(email=email).exists():
-        return render(request, 'register.html', {'msg': 'Email already registered'})
-
-    # Create user with hashed password
-    user = User.objects.create(
-        name=name,
-        email=email,
-        #location=location,
-        #city=city,
-        #state=state,
-        #number=phone,
-        password=make_password(pas)  # Hash the password using Django's make_password
-    )
-    
-    # You'll also need to update your login function to use Django's authentication system
-    user = authenticate(request, email=email, password=pas)
-    if user:
-        login(request, user)
-        return redirect("/profile/")
-    else:
-        # This shouldn't happen if user creation was successful, but just in case
-        return render(request, 'register.html', {'msg': 'Registration failed. Please try again.'})
-
-
-def login_view(request):
-    if request.method == 'GET':
-        return render(request, 'login.html')
-    email = request.POST['email']
-    password = request.POST['password']
-    user = authenticate(request, email=email, password=password)
-    if user:
-        login(request, user)
-        return redirect("/")
-    else:
-        return render(request, 'login.html', {'msg': 'Email and password did not match.'})

@@ -3,11 +3,11 @@
 
 {% block style %}
 <style>
-  /* Modern Property Search Styling */
+  /* Modern Property Search Styling with Purple Theme */
   :root {
-    --primary: #2563eb;
-    --primary-dark: #1d4ed8;
-    --secondary: #0891b2;
+    --primary: #6b46c1;
+    --primary-dark: #5a32b0;
+    --secondary: #8a67d5;
     --dark: #0f172a;
     --light: #f8fafc;
     --gray-100: #f1f5f9;
@@ -19,40 +19,50 @@
     --gray-700: #334155;
     --gray-800: #1e293b;
     --gray-900: #0f172a;
+    --text-light: #0b0811b8;
+    --text-muted: #130e1fbb;
+    --text-dim: #261c3b44;
     --card-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
     --transition: all 0.3s ease;
+    --card-bg: rgba(255, 255, 255, 0.5);
+    --border-light: rgba(255, 255, 255, 0.283);
   }
 
   .container {
-    max-width: 1280px;
     margin: 0 auto;
     padding: 2rem;
   }
 
   .search-header {
+    margin-top: -60px;
     display: flex;
     flex-direction: column;
     margin-bottom: 2rem;
   }
 
   .search-title {
-    font-size: 2rem;
-    font-weight: 700;
-    color: var(--gray-900);
+    font-weight: 800;
+    font-size: 2.5rem;
     margin-bottom: 1rem;
+    background:  #633eb2bb;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
   }
 
   .search-subtitle {
-    font-size: 1rem;
-    color: var(--gray-600);
+    color: var(--text-muted);
+    font-size: 1.1rem;
     margin-bottom: 2rem;
   }
 
   .search-box {
     display: flex;
-    background: white;
-    border-radius: 1rem;
-    box-shadow: var(--card-shadow);
+    background: #cab8f02e;
+    border-radius: 16px;
+    box-shadow: 0 6px 16px #cab8f035;
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--border-light);
     overflow: hidden;
     transition: var(--transition);
     padding: 0.5rem;
@@ -60,7 +70,7 @@
   }
 
   .search-box:focus-within {
-    box-shadow: 0 10px 25px rgba(37, 99, 235, 0.15);
+    box-shadow: 0 10px 25px rgba(138, 103, 213, 0.15);
   }
 
   .search-input {
@@ -69,7 +79,7 @@
     padding: 1rem 1.5rem;
     font-size: 1rem;
     background: transparent;
-    color: var(--gray-800);
+    color: var(--text-light);
   }
 
   .search-input:focus {
@@ -80,8 +90,8 @@
     border: none;
     padding: 0 1rem;
     font-size: 1rem;
-    color: var(--gray-800);
-    background-color: var(--gray-100);
+    color: var(--text-light);
+    background-color: rgba(138, 103, 213, 0.1);
     border-radius: 0.5rem;
     margin: 0.25rem;
   }
@@ -91,10 +101,10 @@
   }
 
   .search-btn {
-    background-color: var(--primary);
+    background: linear-gradient(135deg, var(--secondary), var(--primary));
     color: white;
     border: none;
-    border-radius: 0.5rem;
+    border-radius: 50px;
     padding: 0 1.5rem;
     font-weight: 600;
     cursor: pointer;
@@ -103,7 +113,9 @@
   }
 
   .search-btn:hover {
-    background-color: var(--primary-dark);
+    background: linear-gradient(135deg, var(--secondary), var(--primary-dark));
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(154, 82, 236, 0.3);
   }
 
   .filters {
@@ -116,18 +128,18 @@
   .filter-label {
     display: flex;
     align-items: center;
-    color: var(--gray-600);
+    color: var(--text-muted);
     font-weight: 500;
     margin-right: 1rem;
   }
 
   .filter-btn {
-    background-color: white;
-    border: 1px solid var(--gray-200);
-    border-radius: 2rem;
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--border-light);
+    border-radius: 50px;
     padding: 0.5rem 1rem;
     font-size: 0.875rem;
-    color: var(--gray-700);
+    color: var(--text-light);
     cursor: pointer;
     transition: var(--transition);
     display: flex;
@@ -136,12 +148,12 @@
   }
 
   .filter-btn:hover {
-    background-color: var(--gray-100);
-    border-color: var(--gray-300);
+    background-color: rgba(138, 103, 213, 0.1);
+    border-color: var(--secondary);
   }
 
   .filter-btn.active {
-    background-color: var(--primary);
+    background: linear-gradient(135deg, var(--secondary), var(--primary));
     color: white;
     border-color: var(--primary);
   }
@@ -149,7 +161,7 @@
   .results-count {
     font-size: 1.25rem;
     font-weight: 600;
-    color: var(--gray-800);
+    color: var(--text-light);
     margin-bottom: 1.5rem;
   }
 
@@ -160,16 +172,18 @@
   }
 
   .property-card {
-    background-color: white;
-    border-radius: 1rem;
+    background: #cab8f02e;
+    border-radius: 16px;
+    box-shadow: 0 6px 16px #cab8f035;
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--border-light);
     overflow: hidden;
-    box-shadow: var(--card-shadow);
     transition: var(--transition);
   }
 
   .property-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 15px 30px rgba(138, 103, 213, 0.15);
   }
 
   .property-image {
@@ -193,7 +207,7 @@
     position: absolute;
     top: 1rem;
     left: 1rem;
-    background-color: var(--primary);
+    background: linear-gradient(135deg, var(--secondary), var(--primary));
     color: white;
     padding: 0.25rem 0.75rem;
     font-size: 0.75rem;
@@ -215,7 +229,7 @@
   .property-title {
     font-size: 1.125rem;
     font-weight: 600;
-    color: var(--gray-900);
+    color: var(--text-light);
     margin-bottom: 0.75rem;
     line-height: 1.4;
   }
@@ -223,7 +237,7 @@
   .property-location {
     display: flex;
     align-items: center;
-    color: var(--gray-600);
+    color: var(--text-muted);
     font-size: 0.875rem;
     margin-bottom: 1rem;
     line-height: 1.4;
@@ -231,28 +245,28 @@
 
   .property-location i {
     margin-right: 0.5rem;
-    color: var(--gray-500);
+    color: var(--secondary);
   }
 
   .property-features {
     display: flex;
     justify-content: space-between;
     padding-top: 1rem;
-    border-top: 1px solid var(--gray-200);
+    border-top: 1px solid rgba(138, 103, 213, 0.1);
   }
 
   .feature {
     display: flex;
     flex-direction: column;
     align-items: center;
-    color: var(--gray-700);
+    color: var(--text-muted);
     font-size: 0.75rem;
   }
 
   .feature i {
     font-size: 1rem;
     margin-bottom: 0.25rem;
-    color: var(--gray-600);
+    color: var(--secondary);
   }
 
   .property-btn {
@@ -260,11 +274,11 @@
     justify-content: center;
     align-items: center;
     width: 100%;
-    background-color: white;
+    background: transparent;
     border: 1px solid var(--primary);
     color: var(--primary);
     padding: 0.75rem;
-    border-radius: 0.5rem;
+    border-radius: 50px;
     font-weight: 600;
     margin-top: 1rem;
     cursor: pointer;
@@ -272,8 +286,10 @@
   }
 
   .property-btn:hover {
-    background-color: var(--primary);
+    background: linear-gradient(135deg, var(--secondary), var(--primary));
     color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(154, 82, 236, 0.2);
   }
 
   .pagination {
@@ -289,16 +305,16 @@
     align-items: center;
     width: 2.5rem;
     height: 2.5rem;
-    border-radius: 0.5rem;
-    background-color: white;
-    border: 1px solid var(--gray-200);
-    color: var(--gray-800);
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--border-light);
+    color: var(--text-light);
     transition: var(--transition);
     text-decoration: none;
   }
 
   .page-link:hover, .page-link.active {
-    background-color: var(--primary);
+    background: linear-gradient(135deg, var(--secondary), var(--primary));
     border-color: var(--primary);
     color: white;
   }
@@ -314,27 +330,27 @@
 
   .empty-icon {
     font-size: 4rem;
-    color: var(--gray-300);
+    color: rgba(138, 103, 213, 0.3);
     margin-bottom: 1.5rem;
   }
 
   .empty-title {
     font-size: 1.5rem;
     font-weight: 600;
-    color: var(--gray-700);
+    color: var(--text-light);
     margin-bottom: 1rem;
   }
 
   .empty-text {
-    color: var(--gray-500);
+    color: var(--text-muted);
     max-width: 450px;
     margin-bottom: 2rem;
   }
 
   .alert {
-    background-color: #ecfdf5;
-    border-left: 4px solid #10b981;
-    color: #065f46;
+    background-color: rgba(138, 103, 213, 0.1);
+    border-left: 4px solid var(--primary);
+    color: var(--text-light);
     padding: 1rem;
     border-radius: 0.5rem;
     margin-bottom: 1.5rem;
@@ -423,7 +439,7 @@
             <span class="property-tag">{{ type|default:"Property" }}</span>
           </div>
           <div class="property-content">
-            <div class="property-price">₹{{ i.cost }}</div>
+            <div class="property-price">${{ i.cost }}</div>
             <h3 class="property-title">{{ i.desc|slice:"0:60" }}...</h3>
             <div class="property-location">
               <i class="fa fa-map-marker"></i>

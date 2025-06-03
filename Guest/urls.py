@@ -23,9 +23,9 @@ from django.contrib.auth.views import LogoutView
 from django.views.generic.base import RedirectView
 
 
-admin.site.site_header = "Rental Admin"
-admin.site.site_title = "Rental Admin Portal"
-admin.site.index_title = "Welcome to Rental Admin Portal"
+admin.site.site_header = "NextNest Admin"
+admin.site.site_title = "NextNest Admin Portal"
+admin.site.index_title = "Welcome to NextNest Admin Portal"
 
 admin.autodiscover()
 urlpatterns = [

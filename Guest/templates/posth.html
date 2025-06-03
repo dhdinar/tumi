@@ -16,18 +16,15 @@
 
 <style>
     .post-container {
-        background: rgba(255, 255, 255, 0.03);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        border-radius: 15px;
-        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+        background: #FFFFFF;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
         padding: 30px;
         margin: 2% 5%;
     }
     
     .form-title {
-        color: #fff;
+        color: #6c4aa0;
         text-align: center;
         font-size: 28px;
         font-weight: 700;
@@ -44,7 +41,7 @@
         transform: translateX(-50%);
         width: 80px;
         height: 3px;
-        background: linear-gradient(135deg, #03A589, #016A60);
+        background: #6c4aa0;
         border-radius: 3px;
     }
     
@@ -53,26 +50,26 @@
     }
     
     .form-label {
-        color: #fff;
+        color: #555;
         font-weight: 600;
         margin-bottom: 8px;
         display: block;
     }
     
     .form-control {
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: #F7F7FC;
+        border: 1px solid #E0E0F5;
         border-radius: 8px;
-        color: #fff;
+        color: #333;
         padding: 12px 15px;
         transition: all 0.3s ease;
         width: 100%;
     }
     
     .form-control:focus {
-        background: rgba(255, 255, 255, 0.1);
-        border-color: rgba(3, 165, 137, 0.5);
-        box-shadow: 0 0 0 0.2rem rgba(3, 165, 137, 0.25);
+        background: #FFFFFF;
+        border-color: #6c4aa0;
+        box-shadow: 0 0 0 0.2rem rgba(108, 74, 160, 0.25);
     }
     
     textarea.form-control {
@@ -80,7 +77,7 @@
     }
     
     .btn-primary {
-        background: linear-gradient(135deg, #038069, #016A60);
+        background: #6c4aa0;
         border: none;
         padding: 12px 25px;
         border-radius: 8px;
@@ -88,14 +85,37 @@
         text-transform: uppercase;
         letter-spacing: 1px;
         transition: all 0.3s ease;
-        box-shadow: 0 4px 15px rgba(3, 140, 120, 0.3);
+        box-shadow: 0 4px 15px rgba(108, 74, 160, 0.3);
         margin-top: 20px;
+        color: white;
+        width: 100%;
     }
     
     .btn-primary:hover {
-        background: linear-gradient(135deg, #038069, #01213D);
+        background: #5a3d89;
         transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(3, 140, 120, 0.4);
+        box-shadow: 0 8px 20px rgba(108, 74, 160, 0.4);
+    }
+    
+    .btn-secondary {
+        background: #7655bf;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(108, 74, 160, 0.3);
+        float: right;
+        margin-bottom: 15px;
+        color: white;
+    }
+    
+    .btn-secondary:hover {
+        background: #644da3;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(108, 74, 160, 0.4);
     }
     
     .form-row {
@@ -123,7 +143,7 @@
         height: 150px;
         object-fit: cover;
         border-radius: 8px;
-        border: 3px solid rgba(3, 165, 137, 0.3);
+        border: 3px solid rgba(108, 74, 160, 0.3);
         box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
     }
     
@@ -133,10 +153,10 @@
     }
     
     .form-file-label {
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px dashed rgba(3, 165, 137, 0.5);
+        background: #F7F7FC;
+        border: 1px dashed #6c4aa0;
         border-radius: 8px;
-        color: #fff;
+        color: #555;
         padding: 30px 15px;
         text-align: center;
         cursor: pointer;
@@ -145,12 +165,12 @@
     }
     
     .form-file-label:hover {
-        background: rgba(3, 165, 137, 0.1);
+        background: rgba(108, 74, 160, 0.1);
     }
     
     .form-file-label i {
         font-size: 24px;
-        color: #03A589;
+        color: #6c4aa0;
         margin-bottom: 10px;
         display: block;
     }
@@ -165,6 +185,15 @@
         cursor: pointer;
         width: 100%;
         height: 100%;
+    }
+    
+    .alert {
+        background: #e8f5e9;
+        color: #2e7d32;
+        padding: 12px 20px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        border-left: 4px solid #2e7d32;
     }
     
     /* Responsive adjustments */
@@ -192,6 +221,8 @@
         {% endfor %}
     {% endif %}
 
+    <div style="clear: both;"></div>
+
     <form action="/posth/" method="post" enctype="multipart/form-data">
         {% csrf_token %}
         
@@ -200,13 +231,13 @@
             <div class="form-col">
                 <div class="form-group">
                     <label for="location" class="form-label">Location</label>
-                    <input type="text" class="form-control" placeholder="Enter location" name="location" required>
+                    <input type="text" class="form-control" placeholder="Street address" name="location" required>
                 </div>
             </div>
             <div class="form-col">
                 <div class="form-group">
                     <label for="city" class="form-label">City</label>
-                    <input type="text" class="form-control" placeholder="Dinajpur" name="city" required>
+                    <input type="text" class="form-control" placeholder="City name" name="city" required>
                 </div>
             </div>
         </div>

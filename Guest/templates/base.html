@@ -10,12 +10,6 @@
         </title>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-        
-
-
-
-
         
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Plus+Jakarta+Sans:400,500,600,700,800&display=swap">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
@@ -32,15 +26,25 @@
             body {
                 font-family: 'Plus Jakarta Sans', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
                 min-height: 100vh;
-                color: #333;
+                color: #333333;
                 position: relative;
                 overflow-x: hidden;
                 line-height: 1.6;
             }
+            .container {
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 1.5rem;
+}
+
+/* If you want different padding for the navbar container specifically */
+.navbar .container {
+    padding: 0 1.5rem;
+}
             
             /* Updated color scheme to match the purple theme */
             .page-wrapper {
-                background: linear-gradient(125deg, #f5f7fa, #ffffff);
+                background:  #ffffff;
                 background-size: 400% 400%;
                 animation: gradient 30s ease infinite;
                 position: relative;
@@ -50,14 +54,11 @@
             /* Modernized navbar */
             .navbar {
                 width: 100%;
+               
                 height: 60px;
                 background: rgba(255, 255, 255, 0.95) !important;
-                backdrop-filter: blur(20px);
-                -webkit-backdrop-filter: blur(20px);
                 padding: 0 1.5rem;
-                border-bottom: 1px solid rgba(0, 0, 0, 0.08);
-                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-                transition: all 0.3s ease;
+                transition: transform 0.3s ease, background 0.3s ease, padding 0.3s ease, box-shadow 0.3s ease;
             }
             
             .navbar.scrolled {
@@ -69,6 +70,7 @@
             /* Better brand styling */
             .navbar-brand {
                 display: flex;
+               
                 align-items: center;
                 font-family: 'Play', sans-serif;
                 font-weight: 700;
@@ -93,9 +95,12 @@
                 position: relative;
                 margin: 0 0.1rem;
             }
+            .nav-item{
+                color: black;
+            }
             
             .navbar-light .navbar-nav .nav-link {
-                color: #555;
+                color: #000000;
                 font-weight: 500;
                 padding: 0.5rem 0.8rem;
                 font-size: 0.9rem;
@@ -110,8 +115,7 @@
                 left: 0;
                 right: 0;
                 bottom: 0;
-                background: rgba(103, 58, 183, 0.05);
-                border-radius: 8px;
+                
                 z-index: -1;
                 opacity: 0;
                 transition: all 0.3s ease;
@@ -119,17 +123,19 @@
             
             .navbar-light .navbar-nav .nav-link:hover {
                 color: #673ab7;
-                transform: translateY(-1px);
+               
             }
             
             .navbar-light .navbar-nav .nav-link:hover:before {
                 opacity: 1;
             }
+
+            /* or use 'Tektur' here color: #673ab7;
+                font-weight: 600;
+                background: rgba(103, 58, 183, 0.1); */
             
             .navbar-light .navbar-nav .active > .nav-link {
-                color: #673ab7;
-                font-weight: 600;
-                background: rgba(103, 58, 183, 0.1);
+                
             }
             
             .navbar-light .navbar-nav .nav-link::after {
@@ -156,7 +162,7 @@
                 font-weight: 600;
                 font-size: 0.9rem;
                 transition: all 0.3s ease;
-                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+               
             }
             
             .btn-login {
@@ -647,7 +653,10 @@
             <!-- Main content -->
             <div class="main-content fade-in">
                 <div class="container">
-                    {% if messages %}
+
+
+                    <!-- Alart message 
+                     {% if messages %}
                     <div class="messages-container mb-4">
                         {% for message in messages %}
                         <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
@@ -658,7 +667,8 @@
                         </div>
                         {% endfor %}
                     </div>
-                    {% endif %}
+                    {% endif %} -->
+                    
                     
                     {% block body %}
                     {% endblock %}
@@ -666,73 +676,70 @@
             </div>
             
             <!-- Footer -->
-            <footer>
+            <footer >
                 <div class="container">
                     <div class="row">
-                        <div class="col-md-3 mb-4">
-                            <h3>Popular Locations</h3>
-                            <ul>
-                                <li><a href="/search?location=Mumbai">Mumbai</a></li>
-                                <li><a href="/search?location=Delhi">Delhi</a></li>
-                                <li><a href="/search?location=Bangalore">Bangalore</a></li>
-                                <li><a href="/search?location=Hyderabad">Hyderabad</a></li>
+                        <div class="col-md-3 mb-3">
+                            <h5 >Popular Locations</h5>
+                            <ul class="list-unstyled">
+                                <li><a href="/search?location=Dhaka" >Dhaka</a></li>
+                                <li><a href="/search?location=Chittagong" >Chittagong</a></li>
+                                <li><a href="/search?location=Khulna">Khulna</a></li>
+                                <li><a href="/search?location=Rajshahi">Rajshahi</a></li>
                             </ul>
                         </div>
-                        <div class="col-md-3 mb-4">
-                            <h3>Trending Locations</h3>
-                            <ul>
-                                <li><a href="/search?location=Hyderabad">Hyderabad</a></li>
-                                <li><a href="/search?location=Bhubaneswar">Bhubaneswar</a></li>
-                                <li><a href="/search?location=Chandigarh">Chandigarh</a></li>
-                                <li><a href="/search?location=Pune">Pune</a></li>
+                        <div class="col-md-3 mb-3">
+                            <h5 >Trending Locations</h5>
+                            <ul class="list-unstyled">
+                                <li><a href="/search?location=Sylhet">Sylhet</a></li>
+                                <li><a href="/search?location=Rangpur" >Rangpur</a></li>
+                                <li><a href="/search?location=Mymensingh" >Mymensingh</a></li>
+                                <li><a href="/search?location=Comilla">Comilla</a></li>
                             </ul>
                         </div>
-                        <div class="col-md-3 mb-4">
-                            <h3>Quick Links</h3>
-                            <ul>
-                                <li><a href="/about">About Us</a></li>
-                                <li><a href="/contact">Contact Us</a></li>
-                                <li><a href="/privacy-policy">Privacy Policy</a></li>
-                                <li><a href="/terms">Terms & Conditions</a></li>
+                        <div class="col-md-3 mb-3">
+                            <h5 >Quick Links</h5>
+                            <ul class="list-unstyled">
+                                <li><a href="/about" >About Us</a></li>
+                                <li><a href="/contact" >Contact Us</a></li>
+                                <li><a href="/privacy-policy" >Privacy Policy</a></li>
+                                <li><a href="/terms" >Terms & Conditions</a></li>
                             </ul>
                         </div>
-                        <div class="col-md-3 mb-4">
-                            <h3>Popular Tags</h3>
+                        <div class="col-md-3 mb-3">
+                            <h5>Popular Tags</h5>
                             <div class="tag-cloud">
-                                <a href="/search?tag=2BHK" class="tag">2BHK</a>
-                                <a href="/search?tag=3BHK" class="tag">3BHK</a>
-                                <a href="/search?tag=Delhi" class="tag">Delhi</a>
-                                <a href="/search?tag=Mumbai" class="tag">Mumbai</a>
-                                <a href="/search?tag=Bangalore" class="tag">Bangalore</a>
-                                <a href="/search?tag=AC" class="tag">AC</a>
-                                <a href="/search?tag=Non-AC" class="tag">Non-AC</a>
-                                <a href="/search?tag=Family" class="tag">Family</a>
-                                <a href="/search?tag=Flat" class="tag">Flat</a>
+                                <a href="/search?tag=2BHK" class="tag" >2BHK</a>
+                                <a href="/search?tag=3BHK" class="tag" >3BHK</a>
+                                <a href="/search?tag=Dhaka" class="tag">Dhaka</a>
+                                <a href="/search?tag=Chittagong" class="tag" >Chittagong</a>
+                                <a href="/search?tag=AC" class="tag" style=>AC</a>
+                                <a href="/search?tag=Non-AC" class="tag" >Non-AC</a>
+                                <a href="/search?tag=Flat" class="tag" >Flat</a>
                                 <a href="/search?tag=House" class="tag">House</a>
-                                <a href="/search?tag=Room" class="tag">Room</a>
                             </div>
                         </div>
                     </div>
                     
-                    <hr class="mt-4 mb-4" style="background-color: rgba(255, 255, 255, 0.1);">
+                    <hr class="mt-3 mb-3">
                     
                     <div class="row align-items-center">
-                        <div class="col-md-6 mb-3 mb-md-0">
-                            🏢NextNest
-                            <span class="ml-2">© 2025 NextNest. All rights reserved.</span>
+                        <div class="col-md-6 mb-2 mb-md-0">
+                            <span>🏢 NextNest</span>
+                            <span class="ml-2" style="font-size: 0.8rem;">© 2025 NextNest. All rights reserved.</span>
                         </div>
                         <div class="col-md-6">
-                            <div class="social-icons justify-content-md-end">
+                            <div class="social-icons d-flex justify-content-md-end">
                                 <a href="#" class="social-icon">
                                     <i class="fab fa-facebook-f"></i>
                                 </a>
-                                <a href="#" class="social-icon">
+                                <a href="#" class="social-icon" >
                                     <i class="fab fa-instagram"></i>
                                 </a>
-                                <a href="#" class="social-icon">
+                                <a href="#" class="social-icon" >
                                     <i class="fab fa-twitter"></i>
                                 </a>
-                                <a href="#" class="social-icon">
+                                <a href="#" class="social-icon" >
                                     <i class="fab fa-linkedin-in"></i>
                                 </a>
                             </div>
@@ -755,14 +762,31 @@
                 }, 500);
             });
 
-            // Navbar scroll effect
+            // Navbar scroll hide/show effect
+            let lastScrollTop = 0;
+            const navbar = document.querySelector('.navbar');
+            const navbarHeight = navbar.offsetHeight;
+
             window.addEventListener('scroll', function() {
-                const navbar = document.querySelector('.navbar');
-                if (window.scrollY > 50) {
+                let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                
+                // Add scrolled class for styling
+                if (scrollTop > 50) {
                     navbar.classList.add('scrolled');
                 } else {
                     navbar.classList.remove('scrolled');
                 }
+                
+                // Hide/show based on scroll direction
+                if (scrollTop > lastScrollTop && scrollTop > navbarHeight) {
+                    // Scrolling down - hide navbar
+                    navbar.style.transform = 'translateY(-100%)';
+                } else {
+                    // Scrolling up - show navbar
+                    navbar.style.transform = 'translateY(0)';
+                }
+                
+                lastScrollTop = scrollTop;
             });
             
             // Get the modal
