@@ -6,6 +6,7 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.views import LogoutView
+from django.db.models import Q
 from user.models import Room, House, Contact, User
 import re
 
@@ -30,27 +31,309 @@ def index(request):
 
 
 def home(request):
-    return render(request, 'home.html', {'result': '', 'msg': 'Search your query'})
+    # Get all unique locations and cities for suggestions
+    room_locations = Room.objects.values_list('location', 'city').distinct()
+    house_locations = House.objects.values_list('location', 'city').distinct()
+    
+    all_locations = set()
+    for location, city in list(room_locations) + list(house_locations):
+        if location:
+            all_locations.add(location.title())
+        if city:
+            all_locations.add(city.title())
+    
+    context = {
+        'result': '',
+        'msg': 'Search your query',
+        'locations': sorted(list(all_locations))
+    }
+    return render(request, 'home.html', context)
+
+
+def extract_numeric_value(text):
+    """Extract numeric value from text like '1200 sq ft' or '2 BHK'"""
+    if not text:
+        return 0
+    
+    # Remove common words and extract numbers
+    import re
+    numbers = re.findall(r'\d+', str(text))
+    if numbers:
+        return int(numbers[0])
+    return 0
 
 
 def search(request):
     template = loader.get_template('home.html')
     context = {}
+    
     if request.method == 'GET':
-        typ = request.GET.get('type')
-        q = request.GET.get('q', '').lower()
-        context.update({'type': typ, 'q': q})
+        typ = request.GET.get('type', 'House')
+        q = request.GET.get('q', '').strip()
+        min_price = request.GET.get('min_price', '')
+        max_price = request.GET.get('max_price', '')
+        bedrooms = request.GET.get('bedrooms', '')
+        
+        # New range filters
+        min_area = request.GET.get('min_area', '')  # For houses
+        max_area = request.GET.get('max_area', '')  # For houses
+        min_dimension = request.GET.get('min_dimension', '')  # For apartments
+        max_dimension = request.GET.get('max_dimension', '')  # For apartments
+        
+        sort_by = request.GET.get('sort_by', 'cost')
+        sort_order = request.GET.get('sort_order', 'asc')
+        
+        # Update context with search parameters
+        context.update({
+            'type': typ, 
+            'q': q,
+            'min_price': min_price,
+            'max_price': max_price,
+            'bedrooms': bedrooms,
+            'min_area': min_area,
+            'max_area': max_area,
+            'min_dimension': min_dimension,
+            'max_dimension': max_dimension,
+            'sort_by': sort_by,
+            'sort_order': sort_order
+        })
 
         results = []
         if typ == 'House':
-            results = House.objects.filter(location__iexact=q) | House.objects.filter(city__iexact=q)
+            results = House.objects.all()
         elif typ == 'Apartment':
-            results = Room.objects.filter(location__iexact=q) | Room.objects.filter(city__iexact=q)
+            results = Room.objects.all()
 
-        if not results:
-            messages.success(request, "No matching results for your query.")
+        # Apply search filters - FIXED SEARCH LOGIC
+        if q:
+            # Option 1: Exact phrase matching (most precise)
+            search_filter = (
+                Q(location__icontains=q) |
+                Q(city__icontains=q) |
+                Q(desc__icontains=q)
+            )
+            results = results.filter(search_filter)
+            
+            # If no results found with exact phrase, try individual word matching
+            if not results.exists():
+                search_filter = Q()
+                search_terms = q.lower().split()
+                
+                # Use AND logic - all terms must be found somewhere in the record
+                for term in search_terms:
+                    if len(term) > 2:  # Only search for words longer than 2 characters
+                        term_filter = (
+                            Q(location__icontains=term) |
+                            Q(city__icontains=term) |
+                            Q(desc__icontains=term)
+                        )
+                        if not search_filter:
+                            search_filter = term_filter
+                        else:
+                            search_filter &= term_filter  # AND operation
+                
+                # Reset results and apply the new filter
+                if typ == 'House':
+                    results = House.objects.all()
+                else:
+                    results = Room.objects.all()
+                
+                if search_filter:
+                    results = results.filter(search_filter)
 
-        context['result'] = [results, results.count()]
+        # Apply price filters
+        if min_price:
+            try:
+                results = results.filter(cost__gte=int(min_price))
+            except ValueError:
+                pass
+        
+        if max_price:
+            try:
+                results = results.filter(cost__lte=int(max_price))
+            except ValueError:
+                pass
+
+        # Apply bedroom filter
+        if bedrooms:
+            try:
+                results = results.filter(bedrooms=int(bedrooms))
+            except ValueError:
+                pass
+
+        # Apply area range filter for houses
+        if typ == 'House':
+            if min_area:
+                try:
+                    min_area_val = int(min_area)
+                    # Filter by extracting numeric values from area field
+                    filtered_ids = []
+                    for house in results:
+                        area_numeric = extract_numeric_value(house.area)
+                        if area_numeric >= min_area_val:
+                            filtered_ids.append(house.house_id)
+                    results = results.filter(house_id__in=filtered_ids)
+                except ValueError:
+                    pass
+            
+            if max_area:
+                try:
+                    max_area_val = int(max_area)
+                    # Filter by extracting numeric values from area field
+                    filtered_ids = []
+                    for house in results:
+                        area_numeric = extract_numeric_value(house.area)
+                        if area_numeric <= max_area_val:
+                            filtered_ids.append(house.house_id)
+                    results = results.filter(house_id__in=filtered_ids)
+                except ValueError:
+                    pass
+
+        # Apply dimension range filter for apartments
+        if typ == 'Apartment':
+            if min_dimension:
+                try:
+                    min_dim_val = int(min_dimension)
+                    # Filter by extracting numeric values from dimension field
+                    filtered_ids = []
+                    for room in results:
+                        dim_numeric = extract_numeric_value(room.dimention)
+                        if dim_numeric >= min_dim_val:
+                            filtered_ids.append(room.room_id)
+                    results = results.filter(room_id__in=filtered_ids)
+                except ValueError:
+                    pass
+            
+            if max_dimension:
+                try:
+                    max_dim_val = int(max_dimension)
+                    # Filter by extracting numeric values from dimension field
+                    filtered_ids = []
+                    for room in results:
+                        dim_numeric = extract_numeric_value(room.dimention)
+                        if dim_numeric <= max_dim_val:
+                            filtered_ids.append(room.room_id)
+                    results = results.filter(room_id__in=filtered_ids)
+                except ValueError:
+                    pass
+
+        # Apply sorting
+        if sort_by == 'cost':
+            if sort_order == 'desc':
+                results = results.order_by('-cost')
+            else:
+                results = results.order_by('cost')
+        elif sort_by == 'bedrooms':
+            if sort_order == 'desc':
+                results = results.order_by('-bedrooms')
+            else:
+                results = results.order_by('bedrooms')
+        elif sort_by == 'area' and typ == 'House':
+            # Custom sorting by numeric area value
+            results_list = list(results)
+            results_list.sort(
+                key=lambda x: extract_numeric_value(x.area), 
+                reverse=(sort_order == 'desc')
+            )
+            # Convert back to queryset-like structure for template compatibility
+            results = results.filter(house_id__in=[h.house_id for h in results_list])
+            if sort_order == 'desc':
+                results = results.order_by('-house_id')
+            else:
+                results = results.order_by('house_id')
+        elif sort_by == 'dimension' and typ == 'Apartment':
+            # Custom sorting by numeric dimension value
+            results_list = list(results)
+            results_list.sort(
+                key=lambda x: extract_numeric_value(x.dimention), 
+                reverse=(sort_order == 'desc')
+            )
+            # Convert back to queryset-like structure for template compatibility
+            results = results.filter(room_id__in=[r.room_id for r in results_list])
+            if sort_order == 'desc':
+                results = results.order_by('-room_id')
+            else:
+                results = results.order_by('room_id')
+        elif sort_by == 'newest':
+            if typ == 'House':
+                results = results.order_by('-house_id')
+            else:
+                results = results.order_by('-room_id')
+
+        # Get unique values for filter dropdowns
+        all_results = House.objects.all() if typ == 'House' else Room.objects.all()
+        
+        price_ranges = [
+            {'min': 0, 'max': 500, 'label': 'Under $500'},
+            {'min': 500, 'max': 1000, 'label': '$500 - $1,000'},
+            {'min': 1000, 'max': 2000, 'label': '$1,000 - $2,000'},
+            {'min': 2000, 'max': 5000, 'label': '$2,000 - $5,000'},
+            {'min': 5000, 'max': 999999, 'label': 'Above $5,000'},
+        ]
+        
+        bedroom_options = sorted(set(all_results.values_list('bedrooms', flat=True).distinct()))
+        
+        # Get area/dimension ranges for houses or apartments
+        if typ == 'House':
+            # Generate area ranges based on actual data
+            area_ranges = [
+                {'min': 0, 'max': 500, 'label': 'Under 500 sq ft'},
+                {'min': 500, 'max': 1000, 'label': '500 - 1,000 sq ft'},
+                {'min': 1000, 'max': 1500, 'label': '1,000 - 1,500 sq ft'},
+                {'min': 1500, 'max': 2000, 'label': '1,500 - 2,000 sq ft'},
+                {'min': 2000, 'max': 3000, 'label': '2,000 - 3,000 sq ft'},
+                {'min': 3000, 'max': 999999, 'label': 'Above 3,000 sq ft'},
+            ]
+            context['area_ranges'] = area_ranges
+        else:
+            # Generate dimension ranges for apartments (assuming BHK format)
+            dimension_ranges = [
+                {'min': 1, 'max': 1, 'label': '1 BHK'},
+                {'min': 2, 'max': 2, 'label': '2 BHK'},
+                {'min': 3, 'max': 3, 'label': '3 BHK'},
+                {'min': 4, 'max': 4, 'label': '4 BHK'},
+                {'min': 5, 'max': 999, 'label': '5+ BHK'},
+            ]
+            context['dimension_ranges'] = dimension_ranges
+        
+        context.update({
+            'price_ranges': price_ranges,
+            'bedroom_options': bedroom_options,
+        })
+
+        if not results.exists():
+            messages.info(request, f"No {typ.lower()}s found matching your criteria. Try adjusting your filters.")
+
+        # Pagination (simple implementation)
+        results_count = results.count()
+        page_size = 12
+        page = request.GET.get('page', 1)
+        try:
+            page = int(page)
+        except ValueError:
+            page = 1
+        
+        start = (page - 1) * page_size
+        end = start + page_size
+        paginated_results = results[start:end]
+        
+        total_pages = (results_count + page_size - 1) // page_size
+        
+        context['result'] = [paginated_results, total_pages, results_count, page]
+        
+        # Get all unique locations for search suggestions
+        room_locations = Room.objects.values_list('location', 'city').distinct()
+        house_locations = House.objects.values_list('location', 'city').distinct()
+        
+        all_locations = set()
+        for location, city in list(room_locations) + list(house_locations):
+            if location:
+                all_locations.add(location.title())
+            if city:
+                all_locations.add(city.title())
+        
+        context['locations'] = sorted(list(all_locations))
+
     return HttpResponse(template.render(context, request))
 
 

@@ -66,7 +66,7 @@
     overflow: hidden;
     transition: var(--transition);
     padding: 0.5rem;
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem;
   }
 
   .search-box:focus-within {
@@ -80,6 +80,10 @@
     font-size: 1rem;
     background: transparent;
     color: var(--text-light);
+  }
+
+  .search-input::placeholder {
+    color: var(--text-muted);
   }
 
   .search-input:focus {
@@ -118,44 +122,134 @@
     box-shadow: 0 5px 15px rgba(154, 82, 236, 0.3);
   }
 
-  .filters {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
+  .filters-container {
+    background: #cab8f02e;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px #cab8f035;
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--border-light);
+    padding: 1rem;
     margin-bottom: 2rem;
   }
 
-  .filter-label {
+  .filters-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .filter-group {
     display: flex;
-    align-items: center;
+    flex-direction: column;
+  }
+
+  .filter-label {
+    color: var(--text-light);
+    font-weight: 600;
+    margin-bottom: 0.4rem;
+    font-size: 0.8rem;
+  }
+
+  .filter-input, .filter-select {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--border-light);
+    border-radius: 6px;
+    padding: 0.6rem;
+    color: var(--text-light);
+    font-size: 0.8rem;
+    transition: var(--transition);
+  }
+
+  .filter-input::placeholder {
     color: var(--text-muted);
-    font-weight: 500;
-    margin-right: 1rem;
+  }
+
+  .filter-input:focus, .filter-select:focus {
+    outline: none;
+    border-color: var(--secondary);
+    box-shadow: 0 0 0 2px rgba(138, 103, 213, 0.1);
+  }
+
+  .price-inputs, .range-inputs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.4rem;
+  }
+
+  .area-dimension-filter {
+    display: none;
+  }
+
+  .area-dimension-filter.active {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .sort-controls {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid rgba(138, 103, 213, 0.1);
+  }
+
+  .sort-label {
+    color: var(--text-light);
+    font-weight: 600;
+    font-size: 0.8rem;
+  }
+
+  .sort-select, .sort-order-select {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--border-light);
+    border-radius: 6px;
+    padding: 0.5rem;
+    color: var(--text-light);
+    font-size: 0.8rem;
+    min-width: 120px;
+    transition: var(--transition);
+  }
+
+  .sort-select:focus, .sort-order-select:focus {
+    outline: none;
+    border-color: var(--secondary);
+    box-shadow: 0 0 0 2px rgba(138, 103, 213, 0.1);
+  }
+
+  .filter-actions {
+    display: flex;
+    gap: 0.4rem;
+    margin-top: 0.75rem;
   }
 
   .filter-btn {
-    background-color: rgba(255, 255, 255, 0.1);
-    border: 1px solid var(--border-light);
+    background: transparent;
+    border: 1px solid var(--primary);
+    color: var(--primary);
+    padding: 0.4rem 0.8rem;
     border-radius: 50px;
-    padding: 0.5rem 1rem;
-    font-size: 0.875rem;
-    color: var(--text-light);
+    font-size: 0.8rem;
     cursor: pointer;
     transition: var(--transition);
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
+    font-weight: 500;
   }
 
   .filter-btn:hover {
-    background-color: rgba(138, 103, 213, 0.1);
-    border-color: var(--secondary);
-  }
-
-  .filter-btn.active {
     background: linear-gradient(135deg, var(--secondary), var(--primary));
     color: white;
-    border-color: var(--primary);
+  }
+
+  .clear-btn {
+    background: transparent;
+    border: 1px solid var(--gray-400);
+    color: var(--gray-600);
+  }
+
+  .clear-btn:hover {
+    background: var(--gray-100);
+    border-color: var(--gray-500);
   }
 
   .results-count {
@@ -374,8 +468,27 @@
       padding: 0.75rem;
     }
     
+    .filters-row {
+      grid-template-columns: 1fr;
+    }
+    
+    .price-inputs, .range-inputs {
+      grid-template-columns: 1fr;
+    }
+    
+    .sort-controls {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+    
     .property-grid {
       grid-template-columns: 1fr;
+    }
+
+    .sort-order-select {
+      margin-top: 0.5rem;
+      width: 100%;
     }
   }
 </style>
@@ -396,78 +509,135 @@
     {% endfor %}
   {% endif %}
 
-  <form method="GET" action="/search">
+  <form method="GET" action="/search" id="searchForm">
     <div class="search-box">
-      <input type="text" class="search-input" name="q" placeholder="Where are you looking for a property?" {% if q %}value="{{q}}"{% endif %}>
-      <select name="type" class="search-select">
+      <input type="text" class="search-input" name="q" placeholder="Where are you looking for a property?" {% if q %}value="{{q}}"{% endif %} list="locationList">
+      <datalist id="locationList">
+        {% for location in locations %}
+          <option value="{{ location }}">
+        {% endfor %}
+      </datalist>
+      <select name="type" class="search-select" id="propertyType" onchange="toggleAreaDimensionFilter()">
         <option value="House" {% if type == 'House' %}selected{% endif %}>House</option>
         <option value="Apartment" {% if type == 'Apartment' %}selected{% endif %}>Apartment</option>
       </select>
       <button type="submit" class="search-btn">Search Properties</button>
     </div>
+
+    <div class="filters-container">
+      <div class="filters-row">
+        <div class="filter-group">
+          <label class="filter-label">Price Range</label>
+          <div class="price-inputs">
+            <input type="number" class="filter-input" name="min_price" placeholder="Min Price" {% if min_price %}value="{{min_price}}"{% endif %}>
+            <input type="number" class="filter-input" name="max_price" placeholder="Max Price" {% if max_price %}value="{{max_price}}"{% endif %}>
+          </div>
+        </div>
+
+        <div class="filter-group">
+          <label class="filter-label">Bedrooms</label>
+          <select name="bedrooms" class="filter-select">
+            <option value="">Any Bedrooms</option>
+            {% for bedroom in bedroom_options %}
+              <option value="{{ bedroom }}" {% if bedrooms == bedroom|stringformat:'s' %}selected{% endif %}>{{ bedroom }} Bedroom{% if bedroom != 1 %}s{% endif %}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <!-- Area range filter for Houses -->
+        <div class="filter-group area-dimension-filter" id="areaFilter">
+          <label class="filter-label">Area Range (sq ft)</label>
+          <div class="range-inputs">
+            <input type="number" class="filter-input" name="min_area" placeholder="Min Area" {% if min_area %}value="{{min_area}}"{% endif %}>
+            <input type="number" class="filter-input" name="max_area" placeholder="Max Area" {% if max_area %}value="{{max_area}}"{% endif %}>
+          </div>
+        </div>
+
+        <!-- Dimension range filter for Apartments -->
+        <div class="filter-group area-dimension-filter" id="dimensionFilter">
+          <label class="filter-label">Dimension Range</label>
+          <div class="range-inputs">
+            <input type="number" class="filter-input" name="min_dimension" placeholder="Min Dimension" {% if min_dimension %}value="{{min_dimension}}"{% endif %}>
+            <input type="number" class="filter-input" name="max_dimension" placeholder="Max Dimension" {% if max_dimension %}value="{{max_dimension}}"{% endif %}>
+          </div>
+        </div>
+      </div>
+
+      <div class="sort-controls">
+        <span class="sort-label">Sort by:</span>
+        <select name="sort_by" class="sort-select" id="sortBy" onchange="updateSortOptions()">
+          <option value="cost" {% if sort_by == 'cost' %}selected{% endif %}>Price</option>
+          <option value="bedrooms" {% if sort_by == 'bedrooms' %}selected{% endif %}>Bedrooms</option>
+          <option value="area" {% if sort_by == 'area' %}selected{% endif %}>Area</option>
+          <option value="dimension" {% if sort_by == 'dimension' %}selected{% endif %}>Dimension</option>
+          <option value="newest" {% if sort_by == 'newest' %}selected{% endif %}>Newest</option>
+        </select>
+        
+        <select name="sort_order" class="sort-order-select" id="sortOrderSelect">
+          <option value="asc" {% if sort_order == 'asc' %}selected{% endif %}>Low to High</option>
+          <option value="desc" {% if sort_order == 'desc' %}selected{% endif %}>High to Low</option>
+        </select>
+      </div>
+
+      <div class="filter-actions">
+        <button type="submit" class="filter-btn">Apply Filters</button>
+        <button type="button" class="filter-btn clear-btn" onclick="clearFilters()">Clear All</button>
+      </div>
+    </div>
   </form>
 
-  <div class="filters">
-    <span class="filter-label">Filter by:</span>
-    <button class="filter-btn active">All Properties</button>
-    <button class="filter-btn">
-      <i class="fa fa-home"></i>
-      <span>Property Type</span>
-    </button>
-    <button class="filter-btn">
-      <i class="fa fa-tags"></i>
-      <span>Price Range</span>
-    </button>
-    <button class="filter-btn">
-      <i class="fa fa-map-marker"></i>
-      <span>Location</span>
-    </button>
-    <button class="filter-btn">
-      <i class="fa fa-th-large"></i>
-      <span>Size</span>
-    </button>
-  </div>
-
-  {% if result.0 %}
-    <h2 class="results-count">{{ result.0|length }} Properties Found</h2>
+  {% if result %}
+    <h2 class="results-count">{{ result.2 }} Properties Found</h2>
     
     <div class="property-grid">
-      {% for i in result.0 %}
+      {% for property in result.0 %}
         <div class="property-card">
           <div class="property-image">
-            <img src="{{ i.img.url }}" alt="Property">
+            <img src="{{ property.img.url }}" alt="Property">
             <span class="property-tag">{{ type|default:"Property" }}</span>
           </div>
           <div class="property-content">
-            <div class="property-price">${{ i.cost }}</div>
-            <h3 class="property-title">{{ i.desc|slice:"0:60" }}...</h3>
+            <div class="property-price">${{ property.cost }}</div>
+            <h3 class="property-title">{{ property.desc|slice:"0:60" }}...</h3>
             <div class="property-location">
               <i class="fa fa-map-marker"></i>
-              <span>{{ i.location }}, {{ i.city }}{% if i.state %}, {{ i.state }}{% endif %}</span>
+              <span>{{ property.location|title }}, {{ property.city|title }}</span>
             </div>
             
             <div class="property-features">
               <div class="feature">
                 <i class="fa fa-bed"></i>
-                <span>3 Beds</span>
+                <span>{{ property.bedrooms }} Bed{% if property.bedrooms != 1 %}s{% endif %}</span>
               </div>
               <div class="feature">
-                <i class="fa fa-bath"></i>
-                <span>2 Baths</span>
+                {% if property.balcany == 'yes' %}
+                  <i class="fa fa-check-circle"></i>
+                  <span>Balcony</span>
+                {% else %}
+                  <i class="fa fa-times-circle"></i>
+                  <span>No Balcony</span>
+                {% endif %}
               </div>
-              <div class="feature">
-                <i class="fa fa-vector-square"></i>
-                <span>1,200 sq.ft</span>
-              </div>
+              {% if type == 'House' and property.area %}
+                <div class="feature">
+                  <i class="fa fa-home"></i>
+                  <span>{{ property.area }}</span>
+                </div>
+              {% elif type == 'Apartment' and property.dimention %}
+                <div class="feature">
+                  <i class="fa fa-expand"></i>
+                  <span>{{ property.dimention }}</span>
+                </div>
+              {% endif %}
             </div>
             
             <form action="/descr" style="margin-bottom: 0;">
               {% if type == 'House' %}
-                <button name="id" value="{{ i.house_id }}" class="property-btn">
+                <button name="id" value="{{ property.house_id }}" class="property-btn">
                   <i class="fa fa-eye" style="margin-right: 0.5rem;"></i> View Details
                 </button>
               {% else %}
-                <button name="id" value="{{ i.room_id }}" class="property-btn">
+                <button name="id" value="{{ property.room_id }}" class="property-btn">
                   <i class="fa fa-eye" style="margin-right: 0.5rem;"></i> View Details
                 </button>
               {% endif %}
@@ -477,25 +647,108 @@
       {% endfor %}
     </div>
     
+    {% if result.1 > 1 %}
     <div class="pagination">
-      <a href="#" class="page-link active">1</a>
-      <a href="#" class="page-link">2</a>
-      <a href="#" class="page-link">3</a>
-      <a href="#" class="page-link">...</a>
-      <a href="#" class="page-link">{{ result.1 }}</a>
-      <a href="#" class="page-link">
-        <i class="fa fa-chevron-right"></i>
-      </a>
+      {% if result.3 > 1 %}
+        <a href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ result.3|add:'-1' }}" class="page-link">
+          <i class="fa fa-chevron-left"></i>
+        </a>
+      {% endif %}
+      
+      {% for page_num in result.1|slice:":5" %}
+        {% if page_num == result.3 %}
+          <span class="page-link active">{{ page_num }}</span>
+        {% else %}
+          <a href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ page_num }}" class="page-link">{{ page_num }}</a>
+        {% endif %}
+      {% endfor %}
+      
+      {% if result.3 < result.1 %}
+        <a href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ result.3|add:'1' }}" class="page-link">
+          <i class="fa fa-chevron-right"></i>
+        </a>
+      {% endif %}
     </div>
+    {% endif %}
   {% else %}
     <div class="empty-state">
       <div class="empty-icon">
         <i class="fa fa-search"></i>
       </div>
-      <h2 class="empty-title">No properties found</h2>
-      <p class="empty-text">Try adjusting your search criteria or explore our featured properties.</p>
-      <button class="search-btn">View Featured Properties</button>
+      <h2 class="empty-title">{{ msg|default:"Start Your Property Search" }}</h2>
+      <p class="empty-text">Use the search and filters above to find properties that match your preferences.</p>
     </div>
   {% endif %}
 </div>
+
+<script>
+function clearFilters() {
+  // Clear all form inputs except the main search query and type
+  const form = document.getElementById('searchForm');
+  const inputs = form.querySelectorAll('input[type="number"], select:not([name="type"])');
+  inputs.forEach(input => {
+    if (input.name !== 'q' && input.name !== 'type') {
+      input.value = '';
+    }
+  });
+  
+  // Reset sort to default
+  form.querySelector('select[name="sort_by"]').value = 'cost';
+  document.getElementById('sortOrderSelect').value = 'asc';
+}
+
+function toggleAreaDimensionFilter() {
+  const propertyType = document.getElementById('propertyType').value;
+  const areaFilter = document.getElementById('areaFilter');
+  const dimensionFilter = document.getElementById('dimensionFilter');
+  const sortBy = document.getElementById('sortBy');
+  
+  if (propertyType === 'House') {
+    areaFilter.classList.add('active');
+    dimensionFilter.classList.remove('active');
+    // Clear dimension filters when switching to House
+    document.querySelector('input[name="min_dimension"]').value = '';
+    document.querySelector('input[name="max_dimension"]').value = '';
+    // Show area option in sort
+    sortBy.querySelector('option[value="area"]').style.display = 'block';
+    sortBy.querySelector('option[value="dimension"]').style.display = 'none';
+    if (sortBy.value === 'dimension') {
+      sortBy.value = 'cost';
+    }
+  } else {
+    areaFilter.classList.remove('active');
+    dimensionFilter.classList.add('active');
+    // Clear area filters when switching to Apartment
+    document.querySelector('input[name="min_area"]').value = '';
+    document.querySelector('input[name="max_area"]').value = '';
+    // Show dimension option in sort
+    sortBy.querySelector('option[value="area"]').style.display = 'none';
+    sortBy.querySelector('option[value="dimension"]').style.display = 'block';
+    if (sortBy.value === 'area') {
+      sortBy.value = 'cost';
+    }
+  }
+}
+
+function updateSortOptions() {
+  // This function can be used if you need specific behavior for different sort types
+  // Currently keeping it simple with the select dropdown
+}
+
+// Initialize the page
+document.addEventListener('DOMContentLoaded', function() {
+  toggleAreaDimensionFilter();
+});
+
+// Auto-submit form when filters change (optional)
+document.addEventListener('DOMContentLoaded', function() {
+  const filterInputs = document.querySelectorAll('.filter-select, .filter-input');
+  filterInputs.forEach(input => {
+    input.addEventListener('change', function() {
+      // Optional: Auto-submit on filter change
+      // document.getElementById('searchForm').submit();
+    });
+  });
+});
+</script>
 {% endblock %}
