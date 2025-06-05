@@ -508,3 +508,100 @@ def deleteh(request):
         House.objects.filter(house_id=id, user_email=request.user.email).delete()
         messages.success(request, 'House deleted successfully.')
     return redirect('/profile')
+
+
+
+
+def view_all(request, property_type):
+    """
+    View to display all properties of a specific type (apartment/house) with filtering and pagination
+    """
+    # Validate property type
+    if property_type not in ['apartment', 'house']:
+        raise Http404("Invalid property type")
+    
+    # Get the appropriate model based on property type
+    if property_type == 'apartment':
+        model = Room
+        properties = Room.objects.all()
+    else:
+        model = House
+        properties = House.objects.all()
+    
+    # Get filter parameters from GET request
+    min_price = request.GET.get('min_price', '')
+    max_price = request.GET.get('max_price', '')
+    bedrooms = request.GET.get('bedrooms', '')
+    city = request.GET.get('city', '')
+    sort_by = request.GET.get('sort', 'newest')
+    
+    # Apply price filters
+    if min_price:
+        try:
+            properties = properties.filter(cost__gte=int(min_price))
+        except ValueError:
+            pass
+    
+    if max_price:
+        try:
+            properties = properties.filter(cost__lte=int(max_price))
+        except ValueError:
+            pass
+    
+    # Apply bedrooms filter
+    if bedrooms:
+        try:
+            bedroom_count = int(bedrooms)
+            if bedroom_count == 5:
+                # Handle "5+ Bedrooms" case
+                properties = properties.filter(bedrooms__gte=5)
+            else:
+                properties = properties.filter(bedrooms=bedroom_count)
+        except ValueError:
+            pass
+    
+    # Apply city filter
+    if city:
+        properties = properties.filter(city__iexact=city)
+    
+    # Apply sorting
+    if sort_by == 'price_low':
+        properties = properties.order_by('cost')
+    elif sort_by == 'price_high':
+        properties = properties.order_by('-cost')
+    elif sort_by == 'bedrooms':
+        properties = properties.order_by('-bedrooms', 'cost')
+    else:  # newest or default
+        if property_type == 'apartment':
+            properties = properties.order_by('-room_id')
+        else:
+            properties = properties.order_by('-house_id')
+    
+    # Get all unique cities for filter dropdown
+    if property_type == 'apartment':
+        cities = Room.objects.values_list('city', flat=True).distinct().exclude(city__isnull=True).exclude(city__exact='')
+    else:
+        cities = House.objects.values_list('city', flat=True).distinct().exclude(city__isnull=True).exclude(city__exact='')
+    
+    # Pagination
+    from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+    
+    paginator = Paginator(properties, 12)  # Show 12 properties per page
+    page = request.GET.get('page')
+    
+    try:
+        properties = paginator.page(page)
+    except PageNotAnInteger:
+        properties = paginator.page(1)
+    except EmptyPage:
+        properties = paginator.page(paginator.num_pages)
+    
+    context = {
+        'properties': properties,
+        'property_type': property_type,
+        'cities': sorted(cities) if cities else [],
+        'is_paginated': paginator.num_pages > 1,
+        'page_obj': properties,
+    }
+    
+    return render(request, 'view_all.html', context)

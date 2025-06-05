@@ -422,7 +422,7 @@
                     <div class="location-info">
                         <i class="fas fa-map-marker-alt location-icon"></i>
                         <div>
-                            <strong>{{val.location}}, {{val.city}}, {{val.state}}</strong>
+                            <strong>{{val.location}}, {{val.city}}</strong>
                         </div>
                     </div>
                     
@@ -434,7 +434,7 @@
                             </div>
                             <div class="flex-grow-1">
                                 <h5 class="mb-1 font-weight-bold">Posted by {{user.name}}</h5>
-                                <p class="mb-1 text-muted">{{user.location}}, {{user.city}}, {{user.state}}</p>
+                                <p class="mb-1 text-muted">{{val.location}}</p>
                                 <small class="text-muted">Posted on {{val.date}}</small>
                             </div>
                         </div>
@@ -546,7 +546,7 @@
                     <div class="mb-3">
                         <div class="d-flex align-items-center mb-2">
                             <i class="fas fa-map-marker-alt text-primary mr-2"></i>
-                            <span>{{user.location}}, {{user.city}}, {{user.state}}</span>
+                            <span>{{val.city}}</span>
                         </div>
                         <div class="d-flex align-items-center mb-2">
                             <i class="fas fa-envelope text-primary mr-2"></i>

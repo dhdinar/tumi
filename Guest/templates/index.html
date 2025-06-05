@@ -3,17 +3,42 @@
 
 {% block style %}
 <style>
+    /* Purple Theme Variables from about.html */
+    :root {
+        --primary: #6b46c1;
+        --primary-dark: #5a32b0;
+        --secondary: #8a67d5;
+        --dark: #0f172a;
+        --light: #f8fafc;
+        --gray-100: #f1f5f9;
+        --gray-200: #e2e8f0;
+        --gray-300: #cbd5e1;
+        --gray-400: #94a3b8;
+        --gray-500: #64748b;
+        --gray-600: #475569;
+        --gray-700: #334155;
+        --gray-800: #1e293b;
+        --gray-900: #0f172a;
+        --text-light: #0b0811b8;
+        --text-muted: #130e1fbb;
+        --text-dim: #261c3b44;
+        --card-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        --transition: all 0.3s ease;
+        --card-bg: rgba(255, 255, 255, 0.5);
+        --border-light: rgba(255, 255, 255, 0.283);
+    }
+    
     /* Hero Section */
     .hero-section {
         padding: 5rem 0;
         position: relative;
         overflow: hidden;
         text-align: center;
-        background: rgba(5, 10, 25, 0.5);
+        background: #cab8f02e;
         border-radius: 16px;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 6px 16px #cab8f035;
         backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.08);
+        border: 1px solid var(--border-light);
         margin-bottom: 3rem;
     }
     
@@ -27,7 +52,7 @@
         font-weight: 800;
         font-size: 3rem;
         margin-bottom: 1.5rem;
-        background: linear-gradient(135deg, #fff, #03A589);
+        background: linear-gradient(135deg, var(--secondary), var(--primary));
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         text-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
@@ -36,17 +61,17 @@
     .hero-subtitle {
         font-size: 1.5rem;
         margin-bottom: 2rem;
-        color: rgba(255, 255, 255, 0.9);
+        color: var(--text-muted);
     }
     
     .search-container {
-        background: rgba(255, 255, 255, 0.1);
+        background: rgba(138, 103, 213, 0.1);
         border-radius: 50px;
         padding: 0.5rem;
         display: flex;
         max-width: 700px;
         margin: 0 auto;
-        border: 1px solid rgba(255, 255, 255, 0.15);
+        border: 1px solid var(--border-light);
     }
     
     .search-input {
@@ -54,30 +79,30 @@
         background: transparent;
         border: none;
         padding: 0.8rem 1.5rem;
-        color: white;
+        color: var(--text-light);
         font-size: 1rem;
         outline: none;
     }
     
     .search-input::placeholder {
-        color: rgba(255, 255, 255, 0.6);
+        color: var(--text-muted);
     }
     
     .search-btn {
-        background: linear-gradient(135deg, #03A589, #027A70);
+        background: linear-gradient(135deg, var(--secondary), var(--primary));
         border: none;
         color: white;
         border-radius: 50px;
         padding: 0.8rem 2rem;
         font-weight: 600;
         cursor: pointer;
-        transition: all 0.3s ease;
+        transition: var(--transition);
     }
     
     .search-btn:hover {
-        background: linear-gradient(135deg, #03A589, #02315A);
+        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
         transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(3, 165, 137, 0.3);
+        box-shadow: 0 5px 15px rgba(107, 70, 193, 0.3);
     }
     
     /* Feature Cards */
@@ -86,20 +111,22 @@
     }
     
     .feature-card {
-        background: rgba(5, 10, 25, 0.5);
+        background: #cab8f02e;
         border-radius: 16px;
         padding: 2rem;
         text-align: center;
-        transition: all 0.3s ease;
-        border: 1px solid rgba(255, 255, 255, 0.05);
+        transition: var(--transition);
+        border: 1px solid var(--border-light);
         height: 100%;
+        box-shadow: 0 6px 16px #cab8f035;
+        backdrop-filter: blur(10px);
     }
     
     .feature-card:hover {
         transform: translateY(-10px);
-        background: rgba(5, 10, 25, 0.5);
-        border-color: rgba(3, 165, 137, 0.3);
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        background: #cab8f02e;
+        border-color: rgba(138, 103, 213, 0.3);
+        box-shadow: 0 15px 30px rgba(138, 103, 213, 0.15);
     }
     
     .feature-icon {
@@ -109,20 +136,20 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        background: linear-gradient(135deg, rgba(3, 165, 137, 0.2), rgba(2, 49, 90, 0.2));
+        background: linear-gradient(135deg, rgba(138, 103, 213, 0.2), rgba(107, 70, 193, 0.2));
         border-radius: 50%;
         font-size: 1.8rem;
-        color: #03A589;
+        color: var(--primary);
     }
     
     .feature-title {
         font-weight: 700;
         margin-bottom: 1rem;
-        color: #fff;
+        color: var(--primary);
     }
     
     .feature-text {
-        color: rgba(255, 255, 255, 0.7);
+        color: var(--text-muted);
         font-size: 0.95rem;
         line-height: 1.6;
     }
@@ -139,7 +166,7 @@
         font-weight: 700;
         font-size: 1.8rem;
         margin: 0;
-        color: #fff;
+        color: var(--primary);
         position: relative;
     }
     
@@ -150,20 +177,20 @@
         left: 0;
         width: 60px;
         height: 3px;
-        background: linear-gradient(135deg, #03A589, #027A70);
+        background: linear-gradient(135deg, var(--secondary), var(--primary));
         border-radius: 3px;
     }
     
     .view-all-link {
-        color: #03A589;
+        color: var(--primary);
         font-weight: 600;
-        transition: all 0.3s ease;
+        transition: var(--transition);
         display: flex;
         align-items: center;
     }
     
     .view-all-link:hover {
-        color: #fff;
+        color: var(--secondary);
         text-decoration: none;
         transform: translateX(5px);
     }
@@ -174,21 +201,22 @@
     }
     
     .property-card {
-        background: rgba(5, 10, 25, 0.5);
+        background: #cab8f02e;
         border-radius: 16px;
         overflow: hidden;
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-        transition: all 0.3s ease;
+        box-shadow: 0 6px 16px #cab8f035;
+        backdrop-filter: blur(10px);
+        transition: var(--transition);
         margin-bottom: 2rem;
-        border: 1px solid rgba(5, 10, 25, 0.5);
+        border: 1px solid var(--border-light);
         position: relative;
     }
     
     .property-card:hover {
         transform: translateY(-10px);
-        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
-        background: rgba(5, 10, 25, 0.5);
-        border-color: rgba(3, 165, 137, 0.2);
+        box-shadow: 0 15px 30px rgba(138, 103, 213, 0.15);
+        background: #cab8f02e;
+        border-color: rgba(138, 103, 213, 0.2);
     }
     
     .property-image-container {
@@ -211,7 +239,7 @@
         position: absolute;
         top: 15px;
         left: 15px;
-        background: linear-gradient(135deg, #03A589, #027A70);
+        background: linear-gradient(135deg, var(--secondary), var(--primary));
         color: white;
         padding: 0.4rem 1rem;
         border-radius: 30px;
@@ -232,7 +260,7 @@
         align-items: center;
         justify-content: center;
         cursor: pointer;
-        transition: all 0.3s ease;
+        transition: var(--transition);
         backdrop-filter: blur(5px);
         z-index: 1;
     }
@@ -255,14 +283,14 @@
         font-weight: 700;
         font-size: 1.2rem;
         margin-bottom: 0.5rem;
-        color: #fff;
+        color: var(--text-light);
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
     }
     
     .property-location {
-        color: rgba(255, 255, 255, 0.7);
+        color: var(--text-muted);
         font-size: 0.9rem;
         margin-bottom: 1rem;
         display: flex;
@@ -271,11 +299,11 @@
     
     .property-location i {
         margin-right: 0.5rem;
-        color: #03A589;
+        color: var(--primary);
     }
     
     .property-description {
-        color: rgba(255, 255, 255, 0.8);
+        color: var(--text-muted);
         font-size: 0.95rem;
         margin-bottom: 1.5rem;
         line-height: 1.5;
@@ -290,19 +318,19 @@
         display: flex;
         justify-content: space-between;
         padding-top: 1rem;
-        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        border-top: 1px solid var(--border-light);
     }
     
     .property-meta-item {
         display: flex;
         align-items: center;
-        color: rgba(255, 255, 255, 0.7);
+        color: var(--text-muted);
         font-size: 0.85rem;
     }
     
     .property-meta-item i {
         margin-right: 0.5rem;
-        color: #03A589;
+        color: var(--primary);
     }
     
     .property-price {
@@ -315,23 +343,23 @@
     .price-amount {
         font-size: 1.5rem;
         font-weight: 800;
-        color: #03A589;
+        color: var(--primary);
     }
     
     .price-period {
         font-size: 0.85rem;
-        color: rgba(255, 255, 255, 0.6);
+        color: var(--text-muted);
     }
     
     .quick-view-btn {
-        background: linear-gradient(135deg, rgba(3, 165, 137, 0.8), rgba(2, 49, 90, 0.8));
+        background: linear-gradient(135deg, rgba(138, 103, 213, 0.8), rgba(107, 70, 193, 0.8));
         color: white;
         border: none;
         border-radius: 50px;
         padding: 0.7rem 1.5rem;
         font-weight: 600;
         width: 100%;
-        transition: all 0.3s ease;
+        transition: var(--transition);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -342,9 +370,9 @@
     }
     
     .quick-view-btn:hover {
-        background: linear-gradient(135deg, #03A589, #02315A);
+        background: linear-gradient(135deg, var(--secondary), var(--primary));
         transform: translateY(-3px);
-        box-shadow: 0 8px 15px rgba(3, 165, 137, 0.3);
+        box-shadow: 0 8px 15px rgba(107, 70, 193, 0.3);
     }
     
     /* Carousel Controls */
@@ -357,18 +385,18 @@
     .carousel-control-prev, .carousel-control-next {
         width: 40px;
         height: 40px;
-        background: rgba(255, 255, 255, 0.1);
+        background: rgba(138, 103, 213, 0.1);
         border-radius: 50%;
         opacity: 1;
         margin: 0 0.5rem;
         display: flex;
         align-items: center;
         justify-content: center;
-        transition: all 0.3s ease;
+        transition: var(--transition);
     }
     
     .carousel-control-prev:hover, .carousel-control-next:hover {
-        background: rgba(3, 165, 137, 0.3);
+        background: rgba(138, 103, 213, 0.3);
         transform: scale(1.1);
     }
     
@@ -380,29 +408,27 @@
         width: 10px;
         height: 10px;
         border-radius: 50%;
-        background-color: rgba(255, 255, 255, 0.3);
+        background-color: rgba(138, 103, 213, 0.3);
         margin: 0 5px;
-        transition: all 0.3s ease;
+        transition: var(--transition);
     }
     
     .carousel-indicators li.active {
-        background-color: #03A589;
+        background-color: var(--primary);
         width: 12px;
         height: 12px;
     }
     
     /* CTA Section */
     .cta-section {
-        background: rgba(5, 10, 25, 0.5);
+        background: linear-gradient(135deg, var(--secondary), var(--primary));
         border-radius: 16px;
         padding: 3rem;
         text-align: center;
         margin: 4rem 0;
         position: relative;
         overflow: hidden;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-        backdrop-filter: blur(8px);
-        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: 0 8px 32px rgba(107, 70, 193, 0.1);
     }
     
     .cta-pattern {
@@ -424,12 +450,12 @@
         font-size: 2.2rem;
         font-weight: 700;
         margin-bottom: 1.5rem;
-        color: #fff;
+        color: white;
     }
     
     .cta-subtitle {
         font-size: 1.1rem;
-        color: rgba(255, 255, 255, 0.8);
+        color: rgba(255, 255, 255, 0.9);
         margin-bottom: 2rem;
         max-width: 700px;
         margin-left: auto;
@@ -437,22 +463,22 @@
     }
     
     .cta-btn {
-        background: linear-gradient(135deg, #03A589, #027A70);
-        color: white;
+        background: white;
+        color: var(--primary);
         border: none;
         border-radius: 50px;
         padding: 1rem 2.5rem;
         font-weight: 600;
         font-size: 1.1rem;
-        transition: all 0.3s ease;
-        box-shadow: 0 5px 15px rgba(3, 165, 137, 0.3);
+        transition: var(--transition);
+        box-shadow: 0 5px 15px rgba(255, 255, 255, 0.1);
     }
     
     .cta-btn:hover {
-        background: linear-gradient(135deg, #03A589, #02315A);
-        transform: translateY(-5px);
-        box-shadow: 0 10px 25px rgba(3, 165, 137, 0.4);
+        background: var(--dark);
         color: white;
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
         text-decoration: none;
     }
     
@@ -462,20 +488,21 @@
     }
 
     .testimonial-card {
-        background: rgba(5, 10, 25, 0.5);
+        background: #cab8f02e;
         border-radius: 16px;
         padding: 2rem;
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-        transition: all 0.3s ease;
-        border: 1px solid rgba(255, 255, 255, 0.05);
+        box-shadow: 0 6px 16px #cab8f035;
+        backdrop-filter: blur(10px);
+        transition: var(--transition);
+        border: 1px solid var(--border-light);
         height: 100%;
         position: relative;
     }
     
     .testimonial-card:hover {
         transform: translateY(-5px);
-        background: rgba(5, 10, 25, 0.5);
-        border-color: rgba(3, 165, 137, 0.2);
+        background: #cab8f02e;
+        border-color: rgba(138, 103, 213, 0.2);
     }
     
     .testimonial-quote {
@@ -484,11 +511,11 @@
         top: -10px;
         right: 20px;
         opacity: 0.1;
-        color: #03A589;
+        color: var(--primary);
     }
     
     .testimonial-text {
-        color: rgba(255, 255, 255, 0.9);
+        color: var(--text-muted);
         font-size: 1rem;
         line-height: 1.7;
         margin-bottom: 1.5rem;
@@ -505,33 +532,33 @@
         height: 50px;
         border-radius: 50%;
         margin-right: 1rem;
-        border: 2px solid rgba(3, 165, 137, 0.3);
+        border: 2px solid rgba(138, 103, 213, 0.3);
     }
     
     .testimonial-info h5 {
         margin: 0;
         font-weight: 600;
-        color: #fff;
+        color: var(--text-light);
     }
     
     .testimonial-info p {
         margin: 0;
         font-size: 0.85rem;
-        color: rgba(255, 255, 255, 0.7);
+        color: var(--text-muted);
     }
     
     /* Empty State */
     .empty-state {
         text-align: center;
         padding: 5rem 0;
-        background: rgba(255, 255, 255, 0.05);
+        background: rgba(138, 103, 213, 0.05);
         border-radius: 16px;
         margin: 2rem 0;
     }
     
     .empty-state-icon {
         font-size: 4rem;
-        color: rgba(255, 255, 255, 0.2);
+        color: rgba(138, 103, 213, 0.2);
         margin-bottom: 1.5rem;
     }
     
@@ -539,27 +566,27 @@
         font-size: 1.8rem;
         font-weight: 700;
         margin-bottom: 1rem;
-        color: #fff;
+        color: var(--primary);
     }
     
     .empty-state-text {
-        color: rgba(255, 255, 255, 0.7);
+        color: var(--text-muted);
         max-width: 500px;
         margin: 0 auto 2rem;
     }
     
     .empty-state-btn {
-        background: linear-gradient(135deg, #03A589, #027A70);
+        background: linear-gradient(135deg, var(--secondary), var(--primary));
         color: white;
         border: none;
         border-radius: 50px;
         padding: 0.8rem 2rem;
         font-weight: 600;
-        transition: all 0.3s ease;
+        transition: var(--transition);
     }
     
     .empty-state-btn:hover {
-        background: linear-gradient(135deg, #03A589, #02315A);
+        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
         transform: translateY(-3px);
     }
     
@@ -660,7 +687,7 @@
     {% if room %}
     <div class="section-title-container">
         <h2 class="section-title">Recommended Apartments</h2>
-        <a href="/apartments" class="view-all-link">View All <i class="fas fa-chevron-right"></i></a>
+        <a href="/properties/apartment/" class="view-all-link">View All <i class="fas fa-chevron-right"></i></a>
     </div>
     
     <div id="apartmentsCarousel" class="carousel slide" data-ride="carousel" data-interval="false">
@@ -681,25 +708,25 @@
                                 <h3 class="property-title">Modern Apartment in {{i.location}}</h3>
                                 <div class="property-location">
                                     <i class="fas fa-map-marker-alt"></i>
-                                    {{i.location}}, {{i.city}}, {{i.state}}
+                                    {{i.location}}, {{i.city}}
                                 </div>
                                 <div class="property-price">
-                                    <span class="price-amount">₹{{i.cost}}</span>
+                                    <span class="price-amount">${{i.cost}}</span>
                                     <span class="price-period">/ month</span>
                                 </div>
                                 <p class="property-description">{{i.desc|slice:"0:120"}}{% if i.desc|length > 120 %}...{% endif %}</p>
                                 <div class="property-meta">
                                     <div class="property-meta-item">
-                                        <i class="fas fa-bed"></i> 2 Beds
+                                        <i class="fas fa-bed"></i> {{i.bedrooms}} Beds
                                     </div>
                                     <div class="property-meta-item">
-                                        <i class="fas fa-bath"></i> 1 Bath
+                                        <i class="fas fa-bath"></i> Bath
                                     </div>
                                     <div class="property-meta-item">
-                                        <i class="fas fa-vector-square"></i> 850 sq.ft
+                                        <i class="fas fa-vector-square"></i> {{i.dimention}} sq.ft
                                     </div>
                                 </div>
-                                <hr style="border-color: rgba(255, 255, 255, 0.1); margin: 1rem 0;">
+                                <hr style="border-color: var(--border-light); margin: 1rem 0;">
                                 <form action="/descr">
                                     <button name="id" value="{{i.room_id}}" class="quick-view-btn">
                                         <i class="fas fa-eye"></i> View Details
@@ -721,7 +748,7 @@
         
         <div class="carousel-control-section">
             <a class="carousel-control-prev" href="#apartmentsCarousel" role="button" data-slide="prev">
-                <i class="fas fa-chevron-left" style="color: rgba(255, 255, 255, 0.8);"></i>
+                <i class="fas fa-chevron-left" style="color: var(--primary);"></i>
             </a>
             <ol class="carousel-indicators">
                 {% for i in room.1 %}
@@ -729,7 +756,7 @@
                 {% endfor %}
             </ol>
             <a class="carousel-control-next" href="#apartmentsCarousel" role="button" data-slide="next">
-                <i class="fas fa-chevron-right" style="color: rgba(255, 255, 255, 0.8);"></i>
+                <i class="fas fa-chevron-right" style="color: var(--primary);"></i>
             </a>
         </div>
     </div>
@@ -739,7 +766,7 @@
     {% if house %}
     <div class="section-title-container">
         <h2 class="section-title">Recommended Houses</h2>
-        <a href="/houses" class="view-all-link">View All <i class="fas fa-chevron-right"></i></a>
+        <a href="/properties/house/" class="view-all-link">View All <i class="fas fa-chevron-right"></i></a>
     </div>
     
     <div id="housesCarousel" class="carousel slide" data-ride="carousel" data-interval="false">
@@ -760,27 +787,27 @@
                                 <h3 class="property-title">Spacious House in {{i.location}}</h3>
                                 <div class="property-location">
                                     <i class="fas fa-map-marker-alt"></i>
-                                    {{i.location}}, {{i.city}}, {{i.state}}
+                                    {{i.location}}, {{i.city}}
                                 </div>
                                 <div class="property-price">
-                                    <span class="price-amount">₹{{i.cost}}</span>
+                                    <span class="price-amount">${{i.cost}}</span>
                                     <span class="price-period">/ month</span>
                                 </div>
                                 <p class="property-description">{{i.desc|slice:"0:120"}}{% if i.desc|length > 120 %}...{% endif %}</p>
                                 <div class="property-meta">
                                     <div class="property-meta-item">
-                                        <i class="fas fa-bed"></i> 3 Beds
+                                        <i class="fas fa-bed"></i> {{i.bedrooms}} Beds
                                     </div>
                                     <div class="property-meta-item">
-                                        <i class="fas fa-bath"></i> 2 Bath
+                                        <i class="fas fa-bath"></i> Bath
                                     </div>
                                     <div class="property-meta-item">
-                                        <i class="fas fa-vector-square"></i> 1200 sq.ft
+                                        <i class="fas fa-vector-square"></i> {{i.area}} sq.ft
                                     </div>
                                 </div>
-                                <hr style="border-color: rgba(255, 255, 255, 0.1); margin: 1rem 0;">
+                                <hr style="border-color: var(--border-light); margin: 1rem 0;">
                                 <form action="/descr">
-                                    <button name="id" value="{{i.room_id}}" class="quick-view-btn">
+                                    <button name="id" value="{{i.house_id}}" class="quick-view-btn">
                                         <i class="fas fa-eye"></i> View Details
                                     </button>
                                 </form>
@@ -800,7 +827,7 @@
         
         <div class="carousel-control-section">
             <a class="carousel-control-prev" href="#housesCarousel" role="button" data-slide="prev">
-                <i class="fas fa-chevron-left" style="color: rgba(255, 255, 255, 0.8);"></i>
+                <i class="fas fa-chevron-left" style="color: var(--primary);"></i>
             </a>
             <ol class="carousel-indicators">
                 {% for i in house.1 %}
@@ -808,7 +835,7 @@
                 {% endfor %}
             </ol>
             <a class="carousel-control-next" href="#housesCarousel" role="button" data-slide="next">
-                <i class="fas fa-chevron-right" style="color: rgba(255, 255, 255, 0.8);"></i>
+                <i class="fas fa-chevron-right" style="color: var(--primary);"></i>
             </a>
         </div>
     </div>

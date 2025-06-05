@@ -29,6 +29,7 @@ admin.site.index_title = "Welcome to NextNest Admin Portal"
 
 admin.autodiscover()
 urlpatterns = [
+    path('properties/<str:property_type>/', views.view_all, name='view_all'),
     path('register/', views.register, name='register'),
     re_path(r'^$', RedirectView.as_view(url='/index/')),
     re_path(r'^index/',views.index),
