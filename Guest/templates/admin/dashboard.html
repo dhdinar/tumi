@@ -475,7 +475,7 @@
     <div class="admin-container">
         <div class="header">
             <h1>Property Management System</h1>
-            <p>Comprehensive admin panel for managing users, rooms, houses, and contacts</p>
+            <p>Comprehensive admin panel for managing users, apartments, houses, and contacts</p>
         </div>
 
         <!-- Django Messages -->
@@ -492,7 +492,7 @@
         <div class="nav-tabs">
             <button class="nav-tab active" onclick="showSection('dashboard')">Dashboard</button>
             <button class="nav-tab" onclick="showSection('users')">Users</button>
-            <button class="nav-tab" onclick="showSection('rooms')">Rooms</button>
+            <button class="nav-tab" onclick="showSection('rooms')">Apartments</button>
             <button class="nav-tab" onclick="showSection('houses')">Houses</button>
             <button class="nav-tab" onclick="showSection('contacts')">Contacts</button>
         </div>
@@ -633,10 +633,10 @@
         <!-- Rooms Section -->
         <div id="rooms" class="content-section">
             <div class="section-header">
-                <h2 class="section-title">Room Management</h2>
+                <h2 class="section-title">Apartment Management</h2>
             </div>
 
-            <input type="text" class="search-bar" placeholder="Search rooms by location or city..." id="roomSearch">
+            <input type="text" class="search-bar" placeholder="Search apartments by location or city..." id="roomSearch">
 
             <table class="data-table">
                 <thead>
