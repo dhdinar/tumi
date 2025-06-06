@@ -9,6 +9,8 @@ from django.contrib.auth.views import LogoutView
 from django.db.models import Q
 from user.models import Room, House, Contact, User
 import re
+from django.contrib.auth.decorators import user_passes_test
+from django.utils.http import url_has_allowed_host_and_scheme
 
 
 def index(request):
@@ -406,6 +408,10 @@ def register(request):
     return render(request, 'register.html', {'msg': 'Registration failed. Try again.'})
 
 
+
+
+
+
 def login_view(request):
     if request.method == 'GET':
         return render(request, 'login.html')
@@ -605,3 +611,8 @@ def view_all(request, property_type):
     }
     
     return render(request, 'view_all.html', context)
+
+
+
+
+

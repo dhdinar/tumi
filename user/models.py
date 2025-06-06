@@ -1,4 +1,4 @@
-# models.py - Complete corrected file
+# models.py - Updated to match admin panel requirements
 from django.db import models
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
 from django.utils import timezone
@@ -37,7 +37,7 @@ class UserManager(BaseUserManager):
 
 class User(AbstractBaseUser):
 
-    email = models.EmailField(max_length=100, primary_key=True, unique=True)  # Changed to EmailField
+    email = models.EmailField(max_length=100, primary_key=True, unique=True)
     name = models.CharField(max_length=25)
     # password field removed - AbstractBaseUser already has it
     active = models.BooleanField(default=True)
@@ -50,6 +50,11 @@ class User(AbstractBaseUser):
 
     def __str__(self):
         return self.email
+
+    @property
+    def full_name(self):
+        """Property to match admin panel expectation"""
+        return self.name
 
     @staticmethod
     def has_perm(perm, obj=None):
@@ -78,29 +83,37 @@ class User(AbstractBaseUser):
         # "Is the user active?"
         return self.active
 
+    @property
+    def is_superuser(self):
+        # "Is the user a superuser?"
+        return self.admin
+
 
 class Room(models.Model):
 
     room_id = models.AutoField(primary_key=True)
     user_email = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
-    dimention = models.CharField(max_length=100)  # Fixed typo: dimention -> dimension
+    dimention = models.CharField(max_length=100) 
     location = models.CharField(max_length=50)
     city = models.CharField(max_length=50)
-    #state = models.CharField(max_length=50)
     cost = models.IntegerField()
     bedrooms = models.IntegerField()
     kitchen = models.CharField(max_length=3)
     floor = models.IntegerField()
-    #hall = models.CharField(max_length=3)
-    balcany = models.CharField(max_length=3)  
+    balcany = models.CharField(max_length=3)
     desc = models.CharField(max_length=200)
-    #AC = models.CharField(max_length=3)
     img = models.ImageField(upload_to='room_id/', height_field=None,
                             width_field=None, max_length=100)
     date = models.DateField(auto_now=True, auto_now_add=False)
+    verified = models.BooleanField(default=False)  # Added for admin panel - default unverified
 
     def __str__(self):
         return str(self.room_id)
+
+    @property
+    def id(self):
+        """Property to match admin panel expectation"""
+        return self.room_id
 
 
 class House(models.Model):
@@ -114,14 +127,20 @@ class House(models.Model):
     cost = models.IntegerField()
     bedrooms = models.IntegerField()
     kitchen = models.IntegerField()
-    balcany = models.CharField(max_length=3)  
+    balcany = models.CharField(max_length=3)
     desc = models.CharField(max_length=200)
     img = models.ImageField(upload_to='house_id/', height_field=None,
                             width_field=None, max_length=100)
     date = models.DateField(auto_now=True, auto_now_add=False)
+    verified = models.BooleanField(default=False)  # Added for admin panel - default unverified
 
     def __str__(self):
         return str(self.house_id)
+
+    @property
+    def id(self):
+        """Property to match admin panel expectation"""
+        return self.house_id
 
 
 class Contact(models.Model):
@@ -130,6 +149,18 @@ class Contact(models.Model):
     subject = models.CharField(max_length=100)
     email = models.CharField(max_length=100)
     body = models.CharField(max_length=500)
+    created_at = models.DateTimeField(default=timezone.now)  # Added for admin panel
+    checked = models.BooleanField(default=False)  # Added for admin panel - default unchecked
 
     def __str__(self):
         return str(self.contact_id)
+
+    @property
+    def id(self):
+        """Property to match admin panel expectation"""
+        return self.contact_id
+
+    @property
+    def message(self):
+        """Property to match admin panel expectation"""
+        return self.body
