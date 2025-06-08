@@ -361,24 +361,99 @@ def contact(request):
 def descr(request):
     if request.method == 'GET':
         prop_id = request.GET.get('id')
-
+        property_type = request.GET.get('type')  # Get the property type from the form
+        
         if not prop_id:
             raise Http404("Property ID is required")
-
+            
         try:
             prop_id = int(prop_id)
         except (ValueError, TypeError):
             raise Http404("Invalid property ID")
-
-        try:
-            room = get_object_or_404(Room, room_id=prop_id)
-            context = {'val': room, 'type': 'Apartment', 'user': room.user_email}
-        except Http404:
-            house = get_object_or_404(House, house_id=prop_id)
-            context = {'val': house, 'type': 'House', 'user': house.user_email}
-
-        return render(request, 'desc.html', context)
-
+        
+        # Check property type first if provided
+        if property_type == 'apartment':
+            try:
+                room = get_object_or_404(Room, room_id=prop_id)
+                context = {
+                    'val': room, 
+                    'type': 'Apartment', 
+                    'user': room.user_email,
+                    'property_id': room.room_id,
+                    'verified': room.verified,
+                    'date_listed': room.date,
+                    # Include all relevant Room model fields
+                    'dimensions': room.dimention,  # Note: keeping original field name
+                    'location': room.location,
+                    'city': room.city,
+                    'cost': room.cost,
+                    'bedrooms': room.bedrooms,
+                    'kitchen': room.kitchen,
+                    'floor': room.floor,
+                    'balcony': room.balcany,  # Note: keeping original field name
+                    'description': room.desc,
+                    'image': room.img,
+                }
+                return render(request, 'desc.html', context)
+            except Http404:
+                raise Http404("Apartment not found")
+                
+        elif property_type == 'house':
+            try:
+                house = get_object_or_404(House, house_id=prop_id)
+                context = {
+                    'val': house, 
+                    'type': 'House', 
+                    'user': house.user_email,
+                    'property_id': house.house_id,
+                    'verified': house.verified,
+                    'date_listed': house.date,
+                    # Include all relevant House model fields
+                    'area': house.area,
+                    'location': house.location,
+                    'city': house.city,
+                    'cost': house.cost,
+                    'bedrooms': house.bedrooms,
+                    'kitchen': house.kitchen,  # This is IntegerField for houses
+                    'floor': house.floor,
+                    'balcony': house.balcany,  # Note: keeping original field name
+                    'description': house.desc,
+                    'image': house.img,
+                }
+                return render(request, 'desc.html', context)
+            except Http404:
+                raise Http404("House not found")
+        
+        # Fallback to original logic if no type specified (for backward compatibility)
+        else:
+            try:
+                room = get_object_or_404(Room, room_id=prop_id)
+                context = {
+                    'val': room, 
+                    'type': 'Apartment', 
+                    'user': room.user_email,
+                    'property_id': room.room_id,
+                    'verified': room.verified,
+                    'date_listed': room.date,
+                }
+                return render(request, 'desc.html', context)
+            except Http404:
+                try:
+                    house = get_object_or_404(House, house_id=prop_id)
+                    context = {
+                        'val': house, 
+                        'type': 'House', 
+                        'user': house.user_email,
+                        'property_id': house.house_id,
+                        'verified': house.verified,
+                        'date_listed': house.date,
+                    }
+                    return render(request, 'desc.html', context)
+                except Http404:
+                    raise Http404("Property not found")
+    
+    # If not GET request, redirect to home or appropriate page
+    return redirect('/')  # Make sure you have appropriate URL name or use reverse
 
 def register(request):
     if request.method == 'GET':

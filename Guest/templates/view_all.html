@@ -685,19 +685,22 @@
                     </div>
                 </div>
                 <hr style="border-color: var(--border-light); margin: 1rem 0;">
-                <form action="/descr" style="margin: 0;">
-                    {% if property_type == 'house' %}
-                        <button name="id" value="{{ property.house_id }}" class="quick-view-btn">
-                            <i class="fas fa-eye"></i>
-                            View Details
-                        </button>
-                    {% else %}
-                        <button name="id" value="{{ property.room_id }}" class="quick-view-btn">
-                            <i class="fas fa-eye"></i>
-                            View Details
-                        </button>
-                    {% endif %}
-                </form>
+                <!-- Replace the existing form section in your template -->
+<form action="/descr" style="margin: 0;">
+    {% if property_type == 'house' %}
+        <button name="id" value="{{ property.house_id }}" class="quick-view-btn">
+            <i class="fas fa-eye"></i>
+            View Details
+        </button>
+        <input type="hidden" name="type" value="house">
+    {% else %}
+        <button name="id" value="{{ property.room_id }}" class="quick-view-btn">
+            <i class="fas fa-eye"></i>
+            View Details
+        </button>
+        <input type="hidden" name="type" value="apartment">
+    {% endif %}
+</form>
             </div>
         </div>
         {% endfor %}
