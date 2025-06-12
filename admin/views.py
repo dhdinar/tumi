@@ -54,47 +54,47 @@ def admin_dashboard(request):
     
     return render(request, 'admin/dashboard.html', context)
 
-@login_required
-@user_passes_test(is_admin)
-def add_user(request):
-    """Add new user"""
-    if request.method == 'POST':
-        try:
-            email = request.POST.get('email')
-            full_name = request.POST.get('full_name')
-            password = request.POST.get('password')
-            role = request.POST.get('role', 'user')
+# @login_required
+# @user_passes_test(is_admin)
+# def add_user(request):
+#     """Add new user"""
+#     if request.method == 'POST':
+#         try:
+#             email = request.POST.get('email')
+#             full_name = request.POST.get('full_name')
+#             password = request.POST.get('password')
+#             role = request.POST.get('role', 'user')
             
-            # Check if user already exists
-            if User.objects.filter(email=email).exists():
-                messages.error(request, 'User with this email already exists.')
-                return redirect('admin:dashboard')
+#             # Check if user already exists
+#             if User.objects.filter(email=email).exists():
+#                 messages.error(request, 'User with this email already exists.')
+#                 return redirect('admin:dashboard')
             
-            # Create user
-            user = User.objects.create(
-                email=email,
-                username=email,  # Use email as username
-                first_name=full_name.split(' ')[0] if full_name else '',
-                last_name=' '.join(full_name.split(' ')[1:]) if full_name and len(full_name.split(' ')) > 1 else '',
-                password=make_password(password),
-                is_active=True,
-            )
+#             # Create user
+#             user = User.objects.create(
+#                 email=email,
+#                 username=email,  # Use email as username
+#                 first_name=full_name.split(' ')[0] if full_name else '',
+#                 last_name=' '.join(full_name.split(' ')[1:]) if full_name and len(full_name.split(' ')) > 1 else '',
+#                 password=make_password(password),
+#                 is_active=True,
+#             )
             
-            # Set role
-            if role == 'admin':
-                user.is_staff = True
-                user.is_superuser = True
-            elif role == 'staff':
-                user.is_staff = True
+#             # Set role
+#             if role == 'admin':
+#                 user.is_staff = True
+#                 user.is_superuser = True
+#             elif role == 'staff':
+#                 user.is_staff = True
             
-            user.save()
+#             user.save()
             
-            messages.success(request, f'User {email} created successfully.')
+#             messages.success(request, f'User {email} created successfully.')
             
-        except Exception as e:
-            messages.error(request, f'Error creating user: {str(e)}')
+#         except Exception as e:
+#             messages.error(request, f'Error creating user: {str(e)}')
     
-    return redirect('admin:dashboard')
+#     return redirect('admin:dashboard')
 
 @login_required
 @user_passes_test(is_admin)
@@ -125,7 +125,7 @@ def delete_room(request, room_id):
         room = get_object_or_404(Room, room_id=room_id)  # Use correct primary key field
         room_location = room.location
         room.delete()
-        messages.success(request, f'Room at {room_location} deleted successfully.')
+        messages.success(request, f'Apartment {room_location} deleted successfully.')
         
     except Exception as e:
         messages.error(request, f'Error deleting room: {str(e)}')
@@ -199,10 +199,10 @@ def toggle_room_verification(request, room_id):
             room.save()
             
             status = "verified" if room.verified else "unverified"
-            messages.success(request, f'Room marked as {status}.')
+            messages.success(request, f'Apartment marked as {status}.')
             
         except Exception as e:
-            messages.error(request, f'Error updating room: {str(e)}')
+            messages.error(request, f'Error updating Apartment: {str(e)}')
     
     return redirect('admin:dashboard')
 
@@ -269,30 +269,30 @@ def search_users_api(request):
 
 
 
-@login_required
-@user_passes_test(is_admin)
-@csrf_exempt
-def update_user_role(request):
-    """AJAX: Update user role (admin/staff)"""
-    if request.method == 'POST':
-        try:
-            data = json.loads(request.body)
-            email = data.get('email')
-            role_type = data.get('role_type')
-            is_checked = data.get('is_checked')
+# @login_required
+# @user_passes_test(is_admin)
+# @csrf_exempt
+# def update_user_role(request):
+#     """AJAX: Update user role (admin/staff)"""
+#     if request.method == 'POST':
+#         try:
+#             data = json.loads(request.body)
+#             email = data.get('email')
+#             role_type = data.get('role_type')
+#             is_checked = data.get('is_checked')
 
-            user = get_object_or_404(User, email=email)
+#             user = get_object_or_404(User, email=email)
 
-            if role_type == 'admin':
-                user.is_superuser = is_checked
-            elif role_type == 'staff':
-                user.is_staff = is_checked
-            user.save()
+#             if role_type == 'admin':
+#                 user.is_superuser = is_checked
+#             elif role_type == 'staff':
+#                 user.is_staff = is_checked
+#             user.save()
 
-            return JsonResponse({'success': True})
-        except Exception as e:
-            return JsonResponse({'success': False, 'error': str(e)})
-    return JsonResponse({'success': False, 'error': 'Invalid request method'})
+#             return JsonResponse({'success': True})
+#         except Exception as e:
+#             return JsonResponse({'success': False, 'error': str(e)})
+#     return JsonResponse({'success': False, 'error': 'Invalid request method'})
 
 @login_required
 @user_passes_test(is_admin)
@@ -320,3 +320,78 @@ def update_verification(request):
         except Exception as e:
             return JsonResponse({'success': False, 'error': str(e)})
     return JsonResponse({'success': False, 'error': 'Invalid request method'})
+
+
+
+
+
+
+
+
+
+
+@login_required
+@user_passes_test(is_admin)
+@csrf_exempt
+def update_user_role(request):
+    """AJAX: Update user role (admin/staff)"""
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            email = data.get('email')
+            role_type = data.get('role_type')
+            is_checked = data.get('is_checked')
+
+            user = get_object_or_404(User, email=email)
+
+            # Fix: Use the correct field names from your User model
+            if role_type == 'admin':
+                user.admin = is_checked  # Use 'admin' field, not 'is_superuser'
+            elif role_type == 'staff':
+                user.staff = is_checked  # Use 'staff' field, not 'is_staff'
+            
+            user.save()
+
+            return JsonResponse({'success': True})
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)})
+    return JsonResponse({'success': False, 'error': 'Invalid request method'})
+
+
+@login_required
+@user_passes_test(is_admin)
+def add_user(request):
+    """Add new user"""
+    if request.method == 'POST':
+        try:
+            email = request.POST.get('email')
+            full_name = request.POST.get('name')
+            password = request.POST.get('password')
+            role = request.POST.get('role', 'user')
+            
+            # Check if user already exists
+            if User.objects.filter(email=email).exists():
+                messages.error(request, 'User with this email already exists.')
+                return redirect('admin:dashboard')
+            
+            # Fix: Use your custom User model fields and manager
+            # Determine role flags
+            is_admin = (role == 'admin')
+            is_staff = (role == 'staff')
+            
+            # Use your custom create_user method
+            user = User.objects.create_user(
+                email=email,
+                name=full_name,  # Use 'name' field from your model
+                password=password,
+                is_admin=is_admin,
+                is_staff=is_staff,
+                is_active=True
+            )
+            
+            messages.success(request, f'User {email} created successfully.')
+            
+        except Exception as e:
+            messages.error(request, f'Error creating user: {str(e)}')
+    
+    return redirect('admin:dashboard')

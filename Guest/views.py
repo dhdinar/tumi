@@ -503,14 +503,14 @@ def login_view(request):
 
 @login_required(login_url='/login')
 def profile(request):
-    report = Contact.objects.filter(email=request.user.email)
+    # report = Contact.objects.filter(email=request.user.email)
     room = Room.objects.filter(user_email=request.user.email)
     house = House.objects.filter(user_email=request.user.email)
 
     context = {
         'user': request.user,
-        'report': report,
-        'reportno': report.count(),
+        # 'report': report,
+        # 'reportno': report.count(),
         'roomno': room.count(),
         'houseno': house.count(),
         'room': [room, range(1, (room.count() // 3) + 2), room.count()] if room.exists() else [],

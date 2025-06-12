@@ -27,6 +27,8 @@
         --card-bg: rgba(255, 255, 255, 0.7);
         --border-light: rgba(255, 255, 255, 0.4);
     }
+   
+
 
     /* Profile Container Styling */
     .profile-container {
@@ -579,7 +581,7 @@
                                     <div class="col-4">
                                         <div class="profile-stat">
                                             <div class="profile-stat-title">{{ roomno }}</div>
-                                            <div class="profile-stat-text">Rooms</div>
+                                            <div class="profile-stat-text">Apartments</div>
                                         </div>
                                     </div>
                                     <div class="col-4">
@@ -590,7 +592,7 @@
                                     </div>
                                     <div class="col-4">
                                         <div class="profile-stat">
-                                            <div class="profile-stat-title">{{ reportno }}</div>
+                                            <div class="profile-stat-title">❌</div>
                                             <div class="profile-stat-text">Reports</div>
                                         </div>
                                     </div>
@@ -612,13 +614,13 @@
                                 
                                 <div class="profile-desc-link">
                                     <i class="fas fa-phone-alt"></i>
-                                    <a href="tel:{{ user.number }}">{{ user.number }}</a>
+                                    <a href="tel:{{ user.number }}">Information Missing</a>
                                 </div>
                                 
                                 <div class="profile-desc-link">
                                     <i class="fas fa-map-marker-alt"></i>
                                     <a href="https://www.google.com/maps/place/{{ user.location }}" target="_blank">
-                                        {{ user.location }}
+                                        Information Missing
                                     </a>
                                 </div>
                             </div>
